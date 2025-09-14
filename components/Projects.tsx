@@ -93,7 +93,7 @@ export default function Projects() {
       };
 
       el.addEventListener("mouseenter", enter);
-      el.addEventListener("mousemove", move as any);
+  el.addEventListener("mousemove", move);
       el.addEventListener("mouseleave", leave);
       handlers.push({ el, enter, leave, move });
     });
@@ -108,7 +108,7 @@ export default function Projects() {
         opacity: 0, 
         scale: 3, 
         yPercent: 50,
-        pointerEvents: "none" as any 
+        css: { pointerEvents: "none" }
       });
 
       // First card starts visible and properly scaled
@@ -116,7 +116,7 @@ export default function Projects() {
         opacity: 1, 
         scale: 1, 
         yPercent: 0, 
-        pointerEvents: "auto" as any 
+        css: { pointerEvents: "auto" }
       });
       cards[0].classList.add("is-active");
 
@@ -195,7 +195,7 @@ export default function Projects() {
               // Keep active class during transition to maintain border
             },
             onComplete: () => {
-              gsap.set(cards[i - 1], { pointerEvents: "none" as any });
+              gsap.set(cards[i - 1], { css: { pointerEvents: "none" } });
               cards[i - 1].classList.remove("is-active");
             },
           },
@@ -218,7 +218,7 @@ export default function Projects() {
             duration: 1.5,
             ease: "power2.out",
             onStart: () => {
-              gsap.set(card, { pointerEvents: "auto" as any });
+              gsap.set(card, { css: { pointerEvents: "auto" } });
               card.classList.add("is-active");
             },
             onUpdate: function() {
@@ -237,7 +237,7 @@ export default function Projects() {
       ctx.revert();
       handlers.forEach(({ el, enter, leave, move }) => {
         el.removeEventListener("mouseenter", enter);
-        el.removeEventListener("mousemove", move as any);
+  el.removeEventListener("mousemove", move);
         el.removeEventListener("mouseleave", leave);
       });
     };
@@ -250,7 +250,7 @@ export default function Projects() {
         <Reveal>
           <div>
             <h2 className="section-title">My projects</h2>
-            <p className="section-subtitle mt-2">Selected work I'm proud of</p>
+            <p className="section-subtitle mt-2">Selected work I&apos;m proud of</p>
             <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
               <span>Scroll to explore</span>
               <div className="flex gap-1">
@@ -268,7 +268,7 @@ export default function Projects() {
           </div>
         </Reveal>
         <div ref={stageRef} className="pin-stage mt-8 relative h-[90vh] sm:h-[95vh] md:h-screen">
-          {PROJECTS.map((p, i) => (
+          {PROJECTS.map((p) => (
             <div key={p.title} className="slide absolute inset-0 flex items-center justify-center">
               <a
                 href={p.href}
