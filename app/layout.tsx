@@ -16,14 +16,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Lenard Arellano — Full‑Stack Developer",
-  description: "Portfolio of Lenard Arellano, full‑stack developer crafting performant, accessible web applications.",
-  icons: { icon: "/favicon.ico" },
-  metadataBase: new URL("https://example.com"),
+  description:
+    "Portfolio of Lenard Arellano, full‑stack developer crafting performant, accessible web applications.",
+  icons: { icon: "/icon.png" },
+  metadataBase: new URL("https://lenard-portfoliov2.vercel.app"),
   openGraph: {
     title: "Lenard Arellano — Full‑Stack Developer",
     description:
       "Portfolio of Lenard Arellano, full‑stack developer crafting performant, accessible web applications.",
-    url: "https://example.com",
+    url: "https://lenard-portfoliov2.vercel.app",
     siteName: "Lenard Arellano Portfolio",
     type: "website",
   },
