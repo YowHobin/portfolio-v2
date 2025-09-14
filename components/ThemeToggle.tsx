@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 
 const STORAGE_KEY = "theme" as const;
 const THEME_LIGHT = "light" as const;
@@ -8,6 +9,8 @@ const THEME_DARK = "dark" as const;
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<string | null>(null);
+  const sunRef = useRef<SVGSVGElement>(null);
+  const moonRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -18,9 +21,13 @@ export default function ThemeToggle() {
     if (initial === THEME_DARK) {
       document.documentElement.classList.add("dark");
       document.documentElement.setAttribute("data-theme", THEME_DARK);
+      gsap.set(moonRef.current, { x: 0, y: 0, opacity: 1, scale: 1 });
+      gsap.set(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0 });
     } else {
       document.documentElement.classList.remove("dark");
       document.documentElement.removeAttribute("data-theme");
+      gsap.set(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0 });
+      gsap.set(sunRef.current, { x: 0, y: 0, opacity: 1, scale: 1 });
     }
   }, []);
 
@@ -30,9 +37,13 @@ export default function ThemeToggle() {
     if (next === THEME_DARK) {
       document.documentElement.classList.add("dark");
       document.documentElement.setAttribute("data-theme", THEME_DARK);
+      gsap.to(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0, duration: 0.3, ease: "power2.out" });
+      gsap.fromTo(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" });
     } else {
       document.documentElement.classList.remove("dark");
       document.documentElement.removeAttribute("data-theme");
+      gsap.to(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0, duration: 0.3, ease: "power2.out" });
+      gsap.fromTo(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" });
     }
     window.localStorage.setItem(STORAGE_KEY, next);
   };
@@ -45,7 +56,8 @@ export default function ThemeToggle() {
     >
       <span className="relative inline-flex w-5 h-5 items-center justify-center">
         <svg
-          className="absolute scale-100 opacity-100 dark:opacity-0 dark:scale-0 transition-all duration-300"
+          ref={sunRef}
+          className="sun-icon absolute"
           width="20"
           height="20"
           viewBox="0 0 24 24"
@@ -57,7 +69,8 @@ export default function ThemeToggle() {
           <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5" />
         </svg>
         <svg
-          className="absolute scale-0 opacity-0 dark:opacity-100 dark:scale-100 transition-all duration-300"
+          ref={moonRef}
+          className="moon-icon absolute"
           width="20"
           height="20"
           viewBox="0 0 24 24"
