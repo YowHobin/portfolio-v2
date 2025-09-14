@@ -14,11 +14,7 @@ const MAIN: NavItem[] = [
   { href: "#contact", label: "Contact", id: "contact" },
 ];
 
-const STACK_SUB: NavItem[] = [
-  { href: "#stacks-frontend", label: "Frontend", id: "stacks-frontend" },
-  { href: "#stacks-backend", label: "Backend", id: "stacks-backend" },
-  { href: "#stacks-infra", label: "Infra", id: "stacks-infra" },
-];
+
 
 export default function Header() {
   const [activeId, setActiveId] = useState<string>("home");
@@ -26,7 +22,6 @@ export default function Header() {
   const observedIds = useMemo(
     () => [
       ...MAIN.map((m) => m.id),
-      ...STACK_SUB.map((s) => s.id),
     ],
     []
   );
@@ -77,29 +72,19 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 inset-x-0 z-50">
-      <div className="mx-auto max-w-6xl px-4">
+  <div className="mx-auto max-w-6xl px-4 w-full">
         <div className="mt-4 glass border border-black/10 dark:border-white/10 rounded-2xl">
-          <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
             <Link href="#home" className="font-semibold">LA.dev</Link>
-            <nav className="hidden md:flex items-center gap-6 text-sm nav">
+            <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm nav">
               {MAIN.map((n) => (
                 <a key={n.id} href={n.href} data-active={isActive(n.id)} className="link-accent">
                   {n.label}
                 </a>
               ))}
             </nav>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 ml-auto">
               <ThemeToggle />
-            </div>
-          </div>
-          <div className="hidden md:flex items-center gap-3 px-4 pb-3">
-            <span className="text-xs opacity-60">Stacks:</span>
-            <div className="flex items-center gap-2 text-xs nav">
-              {STACK_SUB.map((s) => (
-                <a key={s.id} href={s.href} data-active={activeId === s.id} className="px-2 py-1 rounded-full border border-black/10 dark:border-white/10 hover-bg-muted">
-                  {s.label}
-                </a>
-              ))}
             </div>
           </div>
         </div>

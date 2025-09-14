@@ -30,7 +30,7 @@ export default function Contact() {
 
   return (
     <section id="contact" className="relative">
-      <div className="mx-auto max-w-6xl px-4 py-16">
+  <div className="mx-auto max-w-6xl px-4 py-16 w-full">
         <Reveal>
           <div>
             <h2 className="section-title">Contact me</h2>

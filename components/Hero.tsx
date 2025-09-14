@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 if (typeof window !== "undefined") {
@@ -44,8 +43,8 @@ export default function Hero() {
     <section id="home" className="relative overflow-hidden pt-28" ref={rootRef}>
       <div className="aurora" />
       <div className="absolute inset-0 grid-bg opacity-20" />
-      <div className="relative mx-auto max-w-6xl px-4 py-16 md:py-24">
-        <div className="grid md:grid-cols-2 gap-10 items-center">
+  <div className="relative mx-auto max-w-6xl px-4 py-16 md:py-24 w-full">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
           <div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
               Full‑Stack Developer
@@ -62,13 +61,8 @@ export default function Hero() {
                 Contact Me
               </a>
             </div>
-            <div className="mt-10 flex items-center gap-6 opacity-80">
-              <span className="text-sm">Trusted by</span>
-              <Image src="/vercel.svg" alt="logo" width={60} height={16} className="dark:invert" />
-              <Image src="/next.svg" alt="logo" width={60} height={16} className="dark:invert" />
-            </div>
           </div>
-          <div className="relative" data-terminal>
+          <div className="relative min-w-0 w-full max-w-full" data-terminal>
             <DevTerminal />
           </div>
         </div>

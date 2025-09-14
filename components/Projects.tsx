@@ -246,7 +246,7 @@ export default function Projects() {
   return (
     <section id="projects" className="relative" ref={rootRef}>
       <div className="scroll-progress" ref={progressRef}></div>
-      <div className="mx-auto max-w-6xl px-4 py-16">
+  <div className="mx-auto max-w-6xl px-4 py-16 w-full">
         <Reveal>
           <div>
             <h2 className="section-title">My projects</h2>
@@ -272,7 +272,7 @@ export default function Projects() {
             <div key={p.title} className="slide absolute inset-0 flex items-center justify-center">
               <a
                 href={p.href}
-                className="project-card block w-full sm:w-4/5 lg:w-2/3 xl:w-1/2 glass border border-black/10 dark:border-white/10 rounded-2xl p-6 hover:shadow-lg transition-shadow will-change-transform"
+                className="project-card block w-[min(100%,48rem)] sm:w-[min(85%,42rem)] lg:w-[min(66%,40rem)] xl:w-[min(50%,36rem)] max-w-full glass border border-black/10 dark:border-white/10 rounded-2xl p-6 hover:shadow-lg transition-shadow will-change-transform"
               >
                 <div className="aspect-[16/9] rounded-xl bg-muted/70 border border-black/10 dark:border-white/10 overflow-hidden relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-accent/10 opacity-0 transition-opacity duration-500 project-overlay" />

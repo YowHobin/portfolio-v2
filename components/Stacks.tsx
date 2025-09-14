@@ -175,7 +175,7 @@ export default function Stacks() {
   return (
     <section id="stacks" className="relative" ref={rootRef}>
       <div className="scroll-progress" ref={progressRef}></div>
-      <div className="mx-auto max-w-6xl px-4 py-16">
+  <div className="mx-auto max-w-6xl px-4 py-16 w-full">
         <Reveal>
           <div>
             <h2 className="section-title">My stacks</h2>
@@ -201,7 +201,7 @@ export default function Stacks() {
             <div key={c.title} className="slide absolute inset-0 flex items-center justify-center">
               <div
                 id={c.title === "Frontend" ? "stacks-frontend" : c.title === "Backend" ? "stacks-backend" : "stacks-infra"}
-                className="stack-card w-full sm:w-4/5 lg:w-2/3 xl:w-1/2 glass border border-black/10 dark:border-white/10 rounded-2xl p-6 transition-all duration-300 will-change-transform"
+                className="stack-card w-[min(100%,48rem)] sm:w-[min(85%,42rem)] lg:w-[min(66%,40rem)] xl:w-[min(50%,36rem)] max-w-full glass border border-black/10 dark:border-white/10 rounded-2xl p-6 transition-all duration-300 will-change-transform"
               >
                 <h3 className="text-lg font-semibold transition-all duration-300">{c.title}</h3>
                 <ul className="mt-3 flex flex-wrap gap-2">

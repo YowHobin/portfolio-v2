@@ -39,6 +39,7 @@ html, body {
 body {
   background-color: var(--background);
   color: var(--foreground);
+  overflow-x: hidden;
 }
 
 html {
@@ -140,6 +141,7 @@ html {
     transparent 85%,
     var(--background) 100%
   );
+  overflow: hidden;
 }
 .pin-stage .slide { 
   position: absolute; 

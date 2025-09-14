@@ -54,11 +54,11 @@ export default function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ScrollProgress />
-        <Header />
-        <main>{children}</main>
+  <ScrollProgress />
+  <Header />
+  <main className="overflow-x-hidden">{children}</main>
         <footer className="mt-24 pb-8">
-          <div className="mx-auto max-w-6xl px-4 text-sm text-muted-foreground">
+          <div className="mx-auto max-w-6xl px-4 w-full text-sm text-muted-foreground">
             © {new Date().getFullYear()} Lenard Arellano. All rights reserved.
           </div>
         </footer>

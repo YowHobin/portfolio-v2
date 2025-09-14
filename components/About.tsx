@@ -3,7 +3,7 @@ import Reveal from "./Reveal";
 export default function About() {
   return (
     <section id="about" className="relative">
-      <div className="mx-auto max-w-6xl px-4 py-16">
+  <div className="mx-auto max-w-6xl px-4 py-16 w-full">
         <Reveal>
           <div className="text-center">
             <h2 className="section-title">About me</h2>

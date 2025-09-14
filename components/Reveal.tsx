@@ -30,5 +30,5 @@ export default function Reveal({ children, y = 20, delay = 0 }: { children: Reac
     return () => ctx.revert();
   }, [y, delay]);
 
-  return <div ref={ref}>{children}</div>;
+  return <div ref={ref} className="w-full">{children}</div>;
 }
