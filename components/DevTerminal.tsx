@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 const TICK_MS = 18 as const;
 const NEXT_LINE_DELAY = 650 as const;
 const LOOP_DELAY = 1500 as const;
+const PROGRESS_BAR_SLOTS = 20 as const;
+const PROGRESS_STEP = 2 as const;
 
 type TerminalLine = {
   text: string;
@@ -37,31 +39,37 @@ const LINES: TerminalLine[] = [
 
 export default function DevTerminal() {
   const [displayLines, setDisplayLines] = useState<string[]>([]);
+  const [showCaret, setShowCaret] = useState(true);
   const idxRef = useRef(0);
   const charRef = useRef(0);
   const timerRef = useRef<number | null>(null);
   const preRef = useRef<HTMLPreElement | null>(null);
+  const startedRef = useRef(false);
+  const progressRef = useRef(0);
 
-  const DEFAULT_BAR_SLOTS = 10 as const;
+  const isProgressLine = (s: string) => /(\d{1,3})%/.test(s) || /\[[#█░\.]+\]/.test(s);
 
-  const parseProgress = (s: string) => {
-    const pctMatch = s.match(/(\d{1,3})%/);
-    const percentFromNumber = pctMatch ? Math.min(100, parseInt(pctMatch[1], 10)) : null;
-
-    const barMatch = s.match(/\[([█░]+)?\]?/);
-    const barStr = barMatch?.[1] ?? "";
-    const filled = (barStr.match(/█/g) || []).length;
-    const total = barStr.length || DEFAULT_BAR_SLOTS;
-    const percentFromBar = total > 0 ? Math.round((filled / total) * 100) : null;
-
-    const hasProgressSyntax = /\[/.test(s) || /%/.test(s);
-    const percent = percentFromNumber ?? percentFromBar ?? null;
-    return { hasProgressSyntax, percent } as { hasProgressSyntax: boolean; percent: number | null };
+  const targetPercentFromLine = (s: string) => {
+    const m = s.match(/(\d{1,3})%/);
+    if (!m) return 100;
+    const n = Math.min(100, parseInt(m[1], 10));
+    return Number.isFinite(n) ? n : 100;
   };
 
+  const buildAsciiProgress = (pct: number) => {
+    const bounded = Math.max(0, Math.min(100, Math.round(pct)));
+    const filled = Math.round((bounded / 100) * PROGRESS_BAR_SLOTS);
+    const empty = PROGRESS_BAR_SLOTS - filled;
+    return `[${"#".repeat(filled)}${".".repeat(empty)}] ${bounded}%`;
+  };
+
+
   useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
     const start = () => {
       setDisplayLines([]);
+      setShowCaret(true);
       idxRef.current = 0;
       charRef.current = 0;
       step();
@@ -70,25 +78,61 @@ export default function DevTerminal() {
     const step = () => {
       const current = LINES[idxRef.current];
       if (!current) {
+        setShowCaret(false);
         window.setTimeout(start, LOOP_DELAY);
         return;
       }
       const full = current.text;
+      const promptPrefix = current.prompt ? "" : "";
+
+      if (isProgressLine(full)) {
+        const target = targetPercentFromLine(full);
+        const nextPct = Math.min(target, progressRef.current + PROGRESS_STEP);
+        progressRef.current = nextPct;
+
+        const lineText = `${promptPrefix}${buildAsciiProgress(nextPct)}`;
+        const lineIndex = idxRef.current;
+        setDisplayLines((prev) => {
+          const before = prev.slice(0, lineIndex);
+          return [...before, lineText];
+        });
+
+        if (nextPct >= target) {
+          if (idxRef.current === LINES.length - 1) {
+            setShowCaret(false);
+          }
+          idxRef.current += 1;
+          progressRef.current = 0;
+          if (timerRef.current) window.clearTimeout(timerRef.current);
+          timerRef.current = window.setTimeout(step, NEXT_LINE_DELAY);
+        } else {
+          if (timerRef.current) window.clearTimeout(timerRef.current);
+          timerRef.current = window.setTimeout(step, TICK_MS);
+        }
+        return;
+      }
+
       const nextLen = Math.min(charRef.current + 1, full.length);
       const isDone = nextLen === full.length;
       charRef.current = nextLen;
 
+      const lineIndex = idxRef.current;
       setDisplayLines((prev) => {
-        const before = prev.slice(0, idxRef.current);
-        const curr = (current.prompt ? "" : "") + full.slice(0, nextLen);
+        const before = prev.slice(0, lineIndex);
+        const curr = `${promptPrefix}${full.slice(0, nextLen)}`;
         return [...before, curr];
       });
 
       if (isDone) {
+        if (idxRef.current === LINES.length - 1) {
+          setShowCaret(false);
+        }
         idxRef.current += 1;
         charRef.current = 0;
+        if (timerRef.current) window.clearTimeout(timerRef.current);
         timerRef.current = window.setTimeout(step, NEXT_LINE_DELAY);
       } else {
+        if (timerRef.current) window.clearTimeout(timerRef.current);
         timerRef.current = window.setTimeout(step, TICK_MS);
       }
     };
@@ -112,28 +156,12 @@ export default function DevTerminal() {
         <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: "#22c55e" }} />
         <span className="ml-2 flex-1 min-w-0 truncate text-[11px] sm:text-xs opacity-70">dev@lenard:~/projects</span>
       </div>
-      <pre ref={preRef} aria-live="polite" className="m-0 p-3 sm:p-4 text-[11px] sm:text-sm leading-relaxed font-mono h-48 sm:h-56 md:h-64 lg:h-72 max-h-[50vh] overflow-auto whitespace-pre-wrap break-words">
-        {displayLines.map((ln, i) => {
-          const { hasProgressSyntax, percent } = parseProgress(ln);
-          const isProgress = hasProgressSyntax && percent !== null;
-          return (
-            <div key={i} className="whitespace-pre-wrap">
-              {isProgress ? (
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="flex-1 h-2 rounded bg-black/15 dark:bg-white/15 overflow-hidden" aria-label="progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} role="progressbar">
-                    <div className="h-full bg-foreground" style={{ width: `${percent}%` }} />
-                  </div>
-                  <span className="tabular-nums opacity-70">{percent}%</span>
-                </div>
-              ) : (
-                <>
-                  {ln}
-                  {i === displayLines.length - 1 ? <span className="animate-pulse">▍</span> : null}
-                </>
-              )}
-            </div>
-          );
-        })}
+      <pre ref={preRef} aria-live="polite" className="m-0 p-3 sm:p-4 text-[11px] sm:text-sm leading-relaxed font-mono h-48 sm:h-56 md:h-64 lg:h-72 max-h-[50vh] overflow-auto whitespace-pre">
+        {displayLines.length > 0
+          ? displayLines
+              .map((ln, i) => (showCaret && i === displayLines.length - 1 ? `${ln}▍` : ln))
+              .join("\n")
+          : null}
       </pre>
     </div>
   );
