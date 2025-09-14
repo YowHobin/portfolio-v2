@@ -102,22 +102,6 @@ export default function Projects() {
       if (!cards.length) return;
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (prefersReduced) return;
-
-      // Initial setup - all cards invisible and scaled up
-      gsap.set(cards, { 
-        opacity: 0, 
-        scale: 3, 
-        yPercent: 50,
-        css: { pointerEvents: "none" }
-      });
-
-      // First card starts visible and properly scaled
-      gsap.set(cards[0], { 
-        opacity: 1, 
-        scale: 1, 
-        yPercent: 0, 
-        css: { pointerEvents: "auto" }
-      });
       cards[0].classList.add("is-active");
 
       if (progressBar) {
