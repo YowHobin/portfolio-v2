@@ -223,17 +223,53 @@ export default function Hero() {
         repeat: -1
       });
 
-      gsap.to(nameChars, {
-        rotationY: 5,
-        duration: 2,
-        ease: "power2.inOut",
-        yoyo: true,
-        repeat: -1,
-        stagger: {
-          amount: 0.5,
-          from: "random"
-        }
+      name.style.perspective = "800px";
+
+      const letterSpans = nameChars.filter((s) => (s.textContent || "").trim() !== "");
+      letterSpans.forEach((s) => {
+        s.style.backfaceVisibility = "hidden";
+        s.style.willChange = "transform";
       });
+      const activeTimelines: gsap.core.Timeline[] = [];
+      let lastIndex = -1;
+
+      const pickNextIndex = (): number => {
+        if (letterSpans.length === 0) return -1;
+        let idx = Math.floor(Math.random() * letterSpans.length);
+        if (letterSpans.length > 1) {
+          while (idx === lastIndex) {
+            idx = Math.floor(Math.random() * letterSpans.length);
+          }
+        }
+        lastIndex = idx;
+        return idx;
+      };
+
+      const startLetterCycle = (idx: number) => {
+        if (idx < 0) return;
+        const elSpan = letterSpans[idx];
+
+        const tl = gsap.timeline({
+          defaults: { ease: "power2.inOut" },
+        });
+
+        tl.to(elSpan, { rotateY: "+=720", duration: 0.8 })
+          .to(elSpan, { scaleX: -1, duration: 0.2 })
+          .to({}, { duration: 3 })
+          .add("return")
+          .to(elSpan, { rotateY: "+=360", duration: 0.6 })
+          .to(elSpan, { scaleX: 1, duration: 0.6 }, "<");
+
+        tl.call(() => {
+          const nextIdx = pickNextIndex();
+          startLetterCycle(nextIdx);
+        }, [], "return");
+
+        activeTimelines.push(tl);
+      };
+
+      const firstIdx = pickNextIndex();
+      startLetterCycle(firstIdx);
 
       const handleMouseMove = (e: MouseEvent) => {
         const rect = el.getBoundingClientRect();
@@ -252,6 +288,7 @@ export default function Hero() {
 
       const cleanup = () => {
         el.removeEventListener("mousemove", handleMouseMove);
+        activeTimelines.forEach((t) => t.kill());
       };
 
   el._cleanupMouseMove = cleanup;
