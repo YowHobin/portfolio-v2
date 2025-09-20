@@ -99,8 +99,8 @@ html {
 
 .grid-bg {
   background-image:
-    linear-gradient(to right, color-mix(in oklch, var(--foreground) 12%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 12%, transparent) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in oklch, var(--foreground) 25%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 25%, transparent) 1px, transparent 1px);
   background-size: 24px 24px;
   mask-image: radial-gradient(ellipse at center, black, transparent 65%);
 }
@@ -319,6 +319,11 @@ html {
 
 .scroll-progress.active {
   opacity: 1;
+}
+
+/* Header hide/show animation */
+header {
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 @theme inline {
