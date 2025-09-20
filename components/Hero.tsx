@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import LightRays from "./LightRays";
+import LightRays from "./common/LightRays";
+import ScrambledText from "./common/ScrambledText";
+
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -212,14 +214,6 @@ export default function Hero() {
     createSequentialAnimation();
 
     setTimeout(() => {
-      gsap.to(name, {
-        y: "-=15",
-        duration: 3,
-        ease: "power2.inOut",
-        yoyo: true,
-        repeat: -1
-      });
-
       gsap.to(title, {
         scale: 1.02,
         duration: 4,
@@ -328,13 +322,20 @@ export default function Hero() {
               ref={nameRef}
               className="text-6xl md:text-8xl lg:text-[13rem] font-bold tracking-tight text-foreground mb-4"
             >
-              Lenard Roy Arellano
+              <ScrambledText
+                className="scrambled-text-demo"
+                radius={100}
+                duration={1.2}
+                speed={0.5}
+                
+              >Lenard Roy Arellano
+              </ScrambledText>
             </h1>
             <p
               ref={titleRef}
               className="text-xl md:text-2xl lg:text-3xl text-muted-foreground font-light"
             >
-              Full Stack Developer
+              
             </p>
           </div>
         </div>
