@@ -41,21 +41,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          id="theme-init"
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                const s = localStorage.getItem('theme');
-                const m = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (s === 'dark' || (!s && m)) {
-                  document.documentElement.classList.add('dark');
-                  document.documentElement.setAttribute('data-theme', 'dark');
-                }
-              } catch (e) {}
-            `,
-          }}
-        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
