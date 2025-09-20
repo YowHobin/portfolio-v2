@@ -1,8 +1,11 @@
+
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import ScrollProgress from "@/components/ScrollProgress";
+import ClickSpark from "@/components/common/ClickSpark";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,15 +57,25 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-  <ScrollProgress />
-  <Header />
-  <main className="overflow-x-hidden">{children}</main>
-        <footer className="mt-24 pb-8">
-          <div className="mx-auto max-w-6xl px-4 w-full text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Lenard Arellano. All rights reserved.
-          </div>
-        </footer>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <ClickSpark
+          sparkColor="#fff"
+          sparkSize={10}
+          sparkRadius={15}
+          sparkCount={8}
+          duration={400}
+        >
+          <ScrollProgress />
+          <Header />
+          <main className="overflow-x-hidden">{children}</main>
+          <footer className="mt-24 pb-8">
+            <div className="mx-auto max-w-6xl px-4 w-full text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Lenard Arellano. All rights reserved.
+            </div>
+          </footer>
+        </ClickSpark>
       </body>
     </html>
   );
