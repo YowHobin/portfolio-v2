@@ -126,7 +126,8 @@ export default function Hero() {
       }
     });
 
-    const createSequentialAnimation = () => {
+    const createSequentialAnimation = (): Promise<void> => {
+      return new Promise<void>((resolve) => {
       nameChars.forEach((char) => {
         const startPos = (char as SpanWithStart)._startPos as StartPos;
         gsap.set(char, {
@@ -183,6 +184,7 @@ export default function Hero() {
 
         const animateNext = () => {
           if (currentIndex >= allTitleChars.length) {
+            resolve();
             return;
           }
 
@@ -201,6 +203,8 @@ export default function Hero() {
               currentIndex++;
               if (currentIndex < allTitleChars.length) {
                 animateNext();
+              } else {
+                resolve();
               }
             }
           });
@@ -210,11 +214,10 @@ export default function Hero() {
       };
 
       animateNameSequentially();
+      });
     };
 
-    createSequentialAnimation();
-
-    setTimeout(() => {
+    createSequentialAnimation().then(() => {
       gsap.to(title, {
         scale: 1.02,
         duration: 4,
@@ -293,7 +296,7 @@ export default function Hero() {
         });
       };
 
-      el.addEventListener("mousemove", handleMouseMove);
+  el.addEventListener("mousemove", handleMouseMove);
 
       const cleanup = () => {
         el.removeEventListener("mousemove", handleMouseMove);
@@ -301,7 +304,7 @@ export default function Hero() {
       };
 
   el._cleanupMouseMove = cleanup;
-    }, 1500);
+    });
 
     const header = document.querySelector("header");
     if (header) {
