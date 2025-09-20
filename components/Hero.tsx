@@ -330,12 +330,12 @@ export default function Hero() {
             >
               Lenard Roy Arellano
             </h1>
-            {/* <p
+            <p
               ref={titleRef}
               className="text-xl md:text-2xl lg:text-3xl text-muted-foreground font-light"
             >
               Full Stack Developer
-            </p> */}
+            </p>
           </div>
         </div>
       </div>
