@@ -16,6 +16,9 @@ export default function Hero() {
   const nameRef = useRef<HTMLHeadingElement | null>(null);
   const titleRef = useRef<HTMLParagraphElement | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  type StartPos = { x: number; y: number; rotation: number };
+  type SpanWithStart = HTMLSpanElement & { _startPos?: StartPos };
+  type DivWithCleanup = HTMLDivElement & { _cleanupMouseMove?: () => void };
 
   useEffect(() => {
     const checkTheme = () => {
@@ -44,9 +47,9 @@ export default function Hero() {
   useEffect(() => {
     if (!rootRef.current || !nameRef.current || !titleRef.current) return;
 
-    const el = rootRef.current;
-    const name = nameRef.current;
-    const title = titleRef.current;
+  const el = rootRef.current as DivWithCleanup;
+  const name = nameRef.current as HTMLHeadingElement;
+  const title = titleRef.current as HTMLParagraphElement;
 
     const nameText = name.textContent || "";
     const titleText = title.textContent || "";
@@ -54,8 +57,8 @@ export default function Hero() {
     name.textContent = "";
     title.textContent = "";
 
-    const nameChars = nameText.split("").map((char, i) => {
-      const span = document.createElement("span");
+    const nameChars = nameText.split("").map((char) => {
+      const span = document.createElement("span") as SpanWithStart;
       span.textContent = char;
       span.style.display = "inline-block";
       span.style.transformOrigin = "center center";
@@ -77,13 +80,13 @@ export default function Hero() {
 
       const randomDir = directions[Math.floor(Math.random() * directions.length)];
 
-      (span as any)._startPos = randomDir;
+  span._startPos = randomDir;
 
       name.appendChild(span);
       return span;
     });
 
-    const titleWords = titleText.split(" ");
+  const titleWords = titleText.split(" ");
     const allTitleChars: HTMLElement[] = [];
 
     titleWords.forEach((word, wordIndex) => {
@@ -91,8 +94,8 @@ export default function Hero() {
       wordSpan.style.display = "inline-block";
       wordSpan.style.marginRight = "0.5em";
 
-      const chars = word.split("").map((char, i) => {
-        const span = document.createElement("span");
+      const chars = word.split("").map((char) => {
+        const span = document.createElement("span") as SpanWithStart;
         span.textContent = char;
         span.style.display = "inline-block";
         span.style.transformOrigin = "center center";
@@ -109,7 +112,7 @@ export default function Hero() {
         ];
 
         const randomDir = directions[Math.floor(Math.random() * directions.length)];
-        (span as any)._startPos = randomDir;
+  span._startPos = randomDir;
 
         wordSpan.appendChild(span);
         return span;
@@ -124,8 +127,8 @@ export default function Hero() {
     });
 
     const createSequentialAnimation = () => {
-      nameChars.forEach((char, i) => {
-        const startPos = (char as any)._startPos;
+      nameChars.forEach((char) => {
+        const startPos = (char as SpanWithStart)._startPos as StartPos;
         gsap.set(char, {
           opacity: 0,
           x: startPos.x,
@@ -135,8 +138,8 @@ export default function Hero() {
         });
       });
 
-      allTitleChars.forEach((char, i) => {
-        const startPos = (char as any)._startPos;
+      allTitleChars.forEach((char) => {
+        const startPos = (char as SpanWithStart)._startPos as StartPos;
         gsap.set(char, {
           opacity: 0,
           x: startPos.x,
@@ -155,8 +158,7 @@ export default function Hero() {
             return;
           }
 
-          const char = nameChars[currentIndex];
-          const startPos = (char as any)._startPos;
+          const char = nameChars[currentIndex] as SpanWithStart;
 
           gsap.to(char, {
             opacity: 1,
@@ -184,8 +186,7 @@ export default function Hero() {
             return;
           }
 
-          const char = allTitleChars[currentIndex];
-          const startPos = (char as any)._startPos;
+          const char = allTitleChars[currentIndex] as SpanWithStart;
 
           gsap.to(char, {
             opacity: 1,
@@ -253,7 +254,7 @@ export default function Hero() {
         el.removeEventListener("mousemove", handleMouseMove);
       };
 
-      (el as any)._cleanupMouseMove = cleanup;
+  el._cleanupMouseMove = cleanup;
     }, 1500);
 
     const header = document.querySelector("header");
@@ -285,8 +286,8 @@ export default function Hero() {
 
       return () => {
         heroObserver.disconnect();
-        if ((el as any)._cleanupMouseMove) {
-          (el as any)._cleanupMouseMove();
+        if (el._cleanupMouseMove) {
+          el._cleanupMouseMove();
         }
       };
     }
