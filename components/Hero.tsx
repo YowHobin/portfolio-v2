@@ -235,10 +235,19 @@ export default function Hero() {
 
       const pickNextIndex = (): number => {
         if (letterSpans.length === 0) return -1;
-        let idx = Math.floor(Math.random() * letterSpans.length);
-        if (letterSpans.length > 1) {
+        const neutral = new Set([
+          "o", "O", "0", "l", "i", "I", "H", "X", "x", "T", "V", "U", "W", "Y", "A", "M"
+        ]);
+        const eligible: number[] = [];
+        for (let i = 0; i < letterSpans.length; i++) {
+          const ch = (letterSpans[i].textContent || "");
+          if (ch && !neutral.has(ch)) eligible.push(i);
+        }
+        const pool = eligible.length > 0 ? eligible : [...letterSpans.keys()];
+        let idx = pool[Math.floor(Math.random() * pool.length)];
+        if (pool.length > 1) {
           while (idx === lastIndex) {
-            idx = Math.floor(Math.random() * letterSpans.length);
+            idx = pool[Math.floor(Math.random() * pool.length)];
           }
         }
         lastIndex = idx;
