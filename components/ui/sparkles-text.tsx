@@ -82,6 +82,7 @@ interface SparklesTextProps {
     first: string;
     second: string;
   };
+  renderText?: boolean;
 }
 
 export const SparklesText: React.FC<SparklesTextProps> = ({
@@ -89,6 +90,7 @@ export const SparklesText: React.FC<SparklesTextProps> = ({
   colors = { first: "#9E7AFF", second: "#FE8BBB" },
   className,
   sparklesCount = 10,
+  renderText = true,
   ...props
 }) => {
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
@@ -143,7 +145,7 @@ export const SparklesText: React.FC<SparklesTextProps> = ({
         {sparkles.map((sparkle) => (
           <Sparkle key={sparkle.id} {...sparkle} />
         ))}
-        <strong>{children}</strong>
+        {renderText ? <strong>{children}</strong> : null}
       </span>
     </div>
   );

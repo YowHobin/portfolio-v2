@@ -22,6 +22,7 @@ interface ScrollFloatProps {
   onAnimationComplete?: () => void;
   onReset?: () => void;
   onFirstSegmentComplete?: () => void;
+  secondLineIndentClassName?: string;
 }
 
 const ScrollFloat: React.FC<ScrollFloatProps> = ({
@@ -37,23 +38,38 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
   scrub = true,
   onAnimationComplete,
   onReset,
-  onFirstSegmentComplete
+  onFirstSegmentComplete,
+  secondLineIndentClassName = ''
 }) => {
   const containerRef = useRef<HTMLHeadingElement>(null);
   const firstFiredRef = useRef(false);
 
   const splitText = useMemo(() => {
     const text = typeof children === 'string' ? children : '';
-    return text.split('').map((char, index) => (
-      char === '\n' ? (
-        <br key={`br-${index}`} />
-      ) : (
-        <span className="inline-block word" key={index}>
-          {char === ' ' ? '\u00A0' : char}
-        </span>
-      )
-    ));
-  }, [children]);
+    const out: React.ReactNode[] = [];
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      if (char === '\n') {
+        out.push(<br key={`br-${i}`} />);
+        if (secondLineIndentClassName) {
+          out.push(
+            <span
+              key={`indent-${i}`}
+              aria-hidden
+              className={`inline-block ${secondLineIndentClassName}`}
+            />
+          );
+        }
+      } else {
+        out.push(
+          <span className="inline-block word" key={i}>
+            {char === ' ' ? '\u00A0' : char}
+          </span>
+        );
+      }
+    }
+    return out;
+  }, [children, secondLineIndentClassName]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -61,7 +77,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
 
     const scroller = scrollContainerRef && scrollContainerRef.current ? scrollContainerRef.current : window;
 
-    const charElements = el.querySelectorAll('.inline-block');
+  const charElements = el.querySelectorAll('.inline-block.word');
 
     const rawText = typeof children === 'string' ? children : '';
     const newlineIndex = rawText.indexOf('\n');
