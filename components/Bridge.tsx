@@ -2,7 +2,7 @@
 
 import Reveal from "./Reveal";
 import ScrollFloat from "./common/ScrollFloat";
-import { createElement } from "react";
+import { createElement, useId } from "react";
 import type { CSSProperties, ElementType } from "react";
 
 type TagName = ElementType;
@@ -25,19 +25,30 @@ type BridgeItem = {
 };
 
 type BridgeHeight = "auto" | "half" | "screen" | number | string;
+type ResponsiveHeight = {
+  base?: BridgeHeight;
+  sm?: BridgeHeight;
+  md?: BridgeHeight;
+  lg?: BridgeHeight;
+  xl?: BridgeHeight;
+  "2xl"?: BridgeHeight;
+};
+type BridgeHeightProp = BridgeHeight | ResponsiveHeight;
 
 type BridgeProps = {
   id?: string;
   className?: string;
-  height?: BridgeHeight;
+  height?: BridgeHeightProp;
   fullHeight?: boolean | number | string; // backward compatibility
   items: BridgeItem[];
 };
 
-export default function Bridge({ id = "bridge", className = "", height, fullHeight = true, items }: BridgeProps) {
+export default function Bridge({ id, className = "", height, fullHeight = true, items }: BridgeProps) {
+  const autoId = useId();
+  const sectionId = id ?? `bridge-${autoId}`;
   const getTag = (as?: TagName): ElementType => (as ?? ("h2" as ElementType));
 
-  const resolveHeight = (): BridgeHeight => {
+  const resolveHeight = (): BridgeHeightProp | undefined => {
     if (typeof height !== "undefined") return height;
     if (typeof fullHeight === "boolean") return fullHeight ? "screen" : "auto";
     if (typeof fullHeight === "number") return fullHeight; // treated as vh
@@ -49,8 +60,37 @@ export default function Bridge({ id = "bridge", className = "", height, fullHeig
   let heightClass = "";
   let customHeightClass = "";
   let styleMinHeight: CSSProperties | undefined;
+  let responsiveStyleCSS: string | undefined;
 
-  if (typeof h === "string") {
+  const toCssValue = (val: BridgeHeight): string => {
+    if (typeof val === "number") return `${val}vh`;
+    if (val === "screen") return "100vh";
+    if (val === "half") return "50vh";
+    if (val === "auto") return "auto";
+    if (typeof val === "string") return val; // e.g., "70vh", "80dvh"
+    return "auto";
+  };
+
+  const isResponsiveMap = (val: BridgeHeightProp | undefined): val is ResponsiveHeight =>
+    !!val && typeof val === "object" && !Array.isArray(val) && ("base" in val || "sm" in val || "md" in val || "lg" in val || "xl" in val || "2xl" in val);
+
+  if (isResponsiveMap(h)) {
+    const base = h.base ?? "screen";
+    const sm = h.sm;
+    const md = h.md;
+    const lg = h.lg;
+    const xl = h.xl;
+    const x2 = h["2xl"];
+    styleMinHeight = { minHeight: "var(--bridge-min-h)" } as CSSProperties;
+    const rules: string[] = [];
+    rules.push(`#${sectionId}{--bridge-min-h:${toCssValue(base)};}`);
+    if (sm) rules.push(`@media (min-width:640px){#${sectionId}{--bridge-min-h:${toCssValue(sm)};}}`);
+    if (md) rules.push(`@media (min-width:768px){#${sectionId}{--bridge-min-h:${toCssValue(md)};}}`);
+    if (lg) rules.push(`@media (min-width:1024px){#${sectionId}{--bridge-min-h:${toCssValue(lg)};}}`);
+    if (xl) rules.push(`@media (min-width:1280px){#${sectionId}{--bridge-min-h:${toCssValue(xl)};}}`);
+    if (x2) rules.push(`@media (min-width:1536px){#${sectionId}{--bridge-min-h:${toCssValue(x2)};}}`);
+    responsiveStyleCSS = rules.join("\n");
+  } else if (typeof h === "string") {
     if (h === "screen") heightClass = "min-h-screen";
     else if (h === "half") heightClass = "min-h-[50vh]";
     else if (h === "auto") heightClass = "";
@@ -60,7 +100,8 @@ export default function Bridge({ id = "bridge", className = "", height, fullHeig
   }
 
   return (
-    <section id={id} className={`relative ${heightClass} ${customHeightClass}`} style={styleMinHeight}>
+    <section id={sectionId} className={`relative ${heightClass} ${customHeightClass}`} style={styleMinHeight}>
+      {responsiveStyleCSS ? (<style dangerouslySetInnerHTML={{ __html: responsiveStyleCSS }} />) : null}
       <div className={`relative w-full ${heightClass} ${customHeightClass} ${className}`} style={styleMinHeight}>
         {items.map((item, idx) => {
           const key = item.id ?? `bridge-item-${idx}`;

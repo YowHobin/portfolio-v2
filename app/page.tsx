@@ -11,21 +11,21 @@ export default function Home() {
       <Hero />
       <Bridge
         id="bridge"
-        height={50}
+        height={{ base: 10, md: 50 }}
         className="mx-auto max-w-6xl px-4 py-6"
         items={[
           {
             text: "is",
             variant: "float",
             containerClassName: "w-full flex justify-end px-2",
-            textClassName: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight",
+            textClassName: "text-6xl lg:text-5xl font-bold tracking-tight",
             scroll: { start: "top bottom", end: "bottom top", stagger: 0.05, scrub: 1.2, duration: 1 }
           },
           {
             text: "a",
             variant: "float",
             containerClassName: "w-full flex justify-center mt-2",
-            textClassName: "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight",
+            textClassName: "text-6xl lg:text-5xl font-bold tracking-tight",
             scroll: { start: "top bottom", end: "bottom top", stagger: 0.05, scrub: 1.2, duration: 1 }
           }
         ]}
