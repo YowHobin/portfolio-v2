@@ -14,9 +14,10 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const docIsDark = document.documentElement.classList.contains("dark") || document.documentElement.getAttribute("data-theme") === THEME_DARK;
     const stored = window.localStorage.getItem(STORAGE_KEY);
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = stored ?? (prefersDark ? THEME_DARK : THEME_LIGHT);
+    const initial = docIsDark ? THEME_DARK : stored ?? (prefersDark ? THEME_DARK : THEME_LIGHT);
     setTheme(initial);
     if (initial === THEME_DARK) {
       document.documentElement.classList.add("dark");
@@ -34,6 +35,7 @@ export default function ThemeToggle() {
   const toggle = () => {
     const next = theme === THEME_DARK ? THEME_LIGHT : THEME_DARK;
     setTheme(next);
+    window.localStorage.setItem(STORAGE_KEY, next);
     if (next === THEME_DARK) {
       document.documentElement.classList.add("dark");
       document.documentElement.setAttribute("data-theme", THEME_DARK);
@@ -45,7 +47,6 @@ export default function ThemeToggle() {
       gsap.to(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0, duration: 0.3, ease: "power2.out" });
       gsap.fromTo(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" });
     }
-    window.localStorage.setItem(STORAGE_KEY, next);
   };
 
   return (

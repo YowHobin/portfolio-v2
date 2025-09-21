@@ -41,6 +41,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try { const STORAGE_KEY='theme'; const DARK='dark'; const LIGHT='light'; const stored = localStorage.getItem(STORAGE_KEY); const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; const theme = stored || (prefersDark ? DARK : LIGHT); if (theme === DARK) { document.documentElement.classList.add('dark'); document.documentElement.setAttribute('data-theme', DARK); } else { document.documentElement.classList.remove('dark'); document.documentElement.removeAttribute('data-theme'); } } catch(_){} })();`,
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

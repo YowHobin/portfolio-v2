@@ -241,7 +241,7 @@ export default function Hero() {
   el.addEventListener("mousemove", handleMouseMove);
 
       const cleanup = () => {
-        el.removeEventListener("mousemove", handleMouseMove);
+      el.removeEventListener("mousemove", handleMouseMove);
         activeTimelines.forEach((t) => t.kill());
       };
 
@@ -291,8 +291,8 @@ export default function Hero() {
         <div className="absolute inset-0">
           <LightRays
             raysOrigin="top-center"
-            raysColor="#8b5cf6"
-            raysSpeed={0.5}
+            raysColor="#ffffff"
+            raysSpeed={0.3}
             lightSpread={1.2}
             rayLength={1.5}
             pulsating={true}
@@ -302,7 +302,7 @@ export default function Hero() {
             mouseInfluence={0.15}
             noiseAmount={0.1}
             distortion={0.05}
-            className="opacity-60"
+            className="opacity-100"
           />
         </div>
       )}
