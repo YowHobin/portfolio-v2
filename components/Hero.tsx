@@ -234,54 +234,68 @@ export default function Hero() {
         s.style.willChange = "transform";
       });
       const activeTimelines: gsap.core.Timeline[] = [];
-      let lastIndex = -1;
+      const activeIndices = new Set<number>();
+      const neutral = new Set([
+        "o", "O", "0", "l", "i", "I", "H", "X", "x", "T", "V", "U", "W", "Y", "A", "M"
+      ]);
+      let lastPicked: number[] = [];
 
-      const pickNextIndex = (): number => {
-        if (letterSpans.length === 0) return -1;
-        const neutral = new Set([
-          "o", "O", "0", "l", "i", "I", "H", "X", "x", "T", "V", "U", "W", "Y", "A", "M"
-        ]);
-        const eligible: number[] = [];
-        for (let i = 0; i < letterSpans.length; i++) {
+      const pickNextIndices = (count: number): number[] => {
+        const indices = letterSpans.map((_, i) => i);
+        const eligible = indices.filter((i) => {
           const ch = (letterSpans[i].textContent || "");
-          if (ch && !neutral.has(ch)) eligible.push(i);
-        }
-        const pool = eligible.length > 0 ? eligible : [...letterSpans.keys()];
-        let idx = pool[Math.floor(Math.random() * pool.length)];
-        if (pool.length > 1) {
-          while (idx === lastIndex) {
-            idx = pool[Math.floor(Math.random() * pool.length)];
-          }
-        }
-        lastIndex = idx;
-        return idx;
-      };
-
-      const startLetterCycle = (idx: number) => {
-        if (idx < 0) return;
-        const elSpan = letterSpans[idx];
-
-        const tl = gsap.timeline({
-          defaults: { ease: "power2.inOut" },
+          if (!ch) return false;
+          if (neutral.has(ch)) return false;
+          if (activeIndices.has(i)) return false;
+          return true;
         });
 
-        tl.to(elSpan, { rotateY: "+=720", duration: 0.8 })
-          .to(elSpan, { scaleX: -1, duration: 0.2 })
-          .to({}, { duration: 3 })
-          .add("return")
-          .to(elSpan, { rotateY: "+=360", duration: 0.6 })
-          .to(elSpan, { scaleX: 1, duration: 0.6 }, "<");
-
-        tl.call(() => {
-          const nextIdx = pickNextIndex();
-          startLetterCycle(nextIdx);
-        }, [], "return");
-
-        activeTimelines.push(tl);
+        let pool = eligible.length >= count ? eligible : indices.filter((i) => !activeIndices.has(i));
+        const result: number[] = [];
+        for (let n = 0; n < count && pool.length > 0; n++) {
+          let pick = pool[Math.floor(Math.random() * pool.length)];
+          let tries = 0;
+          while (
+            pool.length > 1 && (result.includes(pick) || lastPicked.includes(pick)) && tries < 10
+          ) {
+            pick = pool[Math.floor(Math.random() * pool.length)];
+            tries++;
+          }
+          result.push(pick);
+          pool = pool.filter((i) => i !== pick);
+        }
+        if (result.length === 0 && indices.length > 0) result.push(indices[0]);
+        lastPicked = result.slice();
+        return result;
       };
 
-      const firstIdx = pickNextIndex();
-      startLetterCycle(firstIdx);
+      const startPairCycle = (indices: number[]) => {
+        if (indices.length === 0) return;
+        const tls: gsap.core.Timeline[] = [];
+        indices.forEach((idx) => {
+          const elSpan = letterSpans[idx];
+          activeIndices.add(idx);
+          const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+          tl.to(elSpan, { rotateY: "+=720", duration: 0.8 })
+            .to(elSpan, { scaleX: -1, duration: 0.2 })
+            .to({}, { duration: 3 })
+            .add("return")
+            .to(elSpan, { rotateY: "+=360", duration: 0.6 })
+            .to(elSpan, { scaleX: 1, duration: 0.6 }, "<")
+            .call(() => { activeIndices.delete(idx); });
+          tls.push(tl);
+          activeTimelines.push(tl);
+        });
+        if (tls.length > 0) {
+          tls[0].call(() => {
+            const next = pickNextIndices(Math.min(2, letterSpans.length));
+            startPairCycle(next);
+          }, [], "return");
+        }
+      };
+
+      const firstPair = pickNextIndices(Math.min(2, letterSpans.length));
+      startPairCycle(firstPair);
 
       const handleMouseMove = (e: MouseEvent) => {
         const rect = el.getBoundingClientRect();
@@ -370,16 +384,9 @@ export default function Hero() {
           <div>
             <h1
               ref={nameRef}
-              className="text-6xl md:text-8xl lg:text-[13rem] font-bold tracking-tight text-foreground mb-4"
+              className="text-[6rem] md:text-8xl lg:text-[13rem] font-bold tracking-tight text-foreground mb-4"
             >
-              <ScrambledText
-                className="scrambled-text-demo"
-                radius={100}
-                duration={1.2}
-                speed={0.5}
-                
-              >Lenard Roy Arellano
-              </ScrambledText>
+              Lenard Roy Arellano
             </h1>
             <p
               ref={titleRef}
