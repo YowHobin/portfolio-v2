@@ -2,7 +2,6 @@
 
 import type { Metadata } from "next";
 import Script from "next/script";
-import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -40,11 +39,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const serverTheme = cookieStore.get("theme")?.value;
-  const isDark = serverTheme === "dark";
   return (
-    <html lang="en" suppressHydrationWarning className={isDark ? "dark" : undefined} {...(isDark ? { "data-theme": "dark" } : {})}>
+    <html lang="en" suppressHydrationWarning>
       <head suppressHydrationWarning>
         <Script
           id="theme-init"

@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import LightRays from "./common/LightRays";
 
 
 if (typeof window !== "undefined") {
@@ -13,34 +12,10 @@ if (typeof window !== "undefined") {
 export default function Hero() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const nameRef = useRef<HTMLHeadingElement | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   type StartPos = { x: number; y: number; rotation: number };
   type SpanWithStart = HTMLSpanElement & { _startPos?: StartPos };
   type DivWithCleanup = HTMLDivElement & { _cleanupMouseMove?: () => void };
 
-  useEffect(() => {
-    const checkTheme = () => {
-      const isDark = document.documentElement.classList.contains("dark") ||
-                    document.documentElement.getAttribute("data-theme") === "dark";
-      setIsDarkMode(isDark);
-    };
-
-    checkTheme();
-
-    const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "data-theme"]
-    });
-
-    const handleStorageChange = () => checkTheme();
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
 
   useEffect(() => {
     if (!rootRef.current || !nameRef.current) return;
@@ -298,26 +273,18 @@ export default function Hero() {
 
   return (
     <section id="home" className="relative overflow-hidden" ref={rootRef}>
-      <div className="absolute inset-0 grid-bg opacity-40 dark:opacity-0 transition-opacity duration-300" />
-      {isDarkMode && (
-        <div className="absolute inset-0">
-          <LightRays
-            raysOrigin="top-center"
-            raysColor="#ffffff"
-            raysSpeed={0.3}
-            lightSpread={1.2}
-            rayLength={1.5}
-            pulsating={true}
-            fadeDistance={0.8}
-            saturation={0.8}
-            followMouse={true}
-            mouseInfluence={0.15}
-            noiseAmount={0.1}
-            distortion={0.05}
-            className="opacity-100"
-          />
-        </div>
-      )}
+      <div className="pointer-events-none absolute inset-0 grid-bg opacity-40 dark:opacity-30 transition-opacity duration-300" />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(60rem 60rem at 50% -10%, color-mix(in oklch, var(--brand-primary) 18%, transparent), transparent 60%), " +
+            "radial-gradient(40rem 40rem at 80% 20%, color-mix(in oklch, var(--brand-secondary) 14%, transparent), transparent 70%), " +
+            "radial-gradient(50rem 50rem at 20% 80%, color-mix(in oklch, var(--brand-tertiary) 10%, transparent), transparent 70%)",
+          maskImage: "radial-gradient(ellipse at center, black, transparent 70%)",
+        }}
+        aria-hidden
+      />
 
       <div className="relative mx-auto max-w-6xl px-4 py-16 md:py-24 w-full ">
         <div className="flex flex-col items-center justify-center text-center min-h-[80vh]">
