@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LightRays from "./common/LightRays";
-import ScrambledText from "./common/ScrambledText";
 
 
 if (typeof window !== "undefined") {
@@ -14,7 +13,6 @@ if (typeof window !== "undefined") {
 export default function Hero() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const nameRef = useRef<HTMLHeadingElement | null>(null);
-  const titleRef = useRef<HTMLParagraphElement | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   type StartPos = { x: number; y: number; rotation: number };
   type SpanWithStart = HTMLSpanElement & { _startPos?: StartPos };
@@ -45,17 +43,14 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    if (!rootRef.current || !nameRef.current || !titleRef.current) return;
+    if (!rootRef.current || !nameRef.current) return;
 
   const el = rootRef.current as DivWithCleanup;
   const name = nameRef.current as HTMLHeadingElement;
-  const title = titleRef.current as HTMLParagraphElement;
 
     const nameText = name.textContent || "";
-    const titleText = title.textContent || "";
 
     name.textContent = "";
-    title.textContent = "";
 
     const nameChars: SpanWithStart[] = [];
     const nameWords = nameText.trim().split(/\s+/);
@@ -99,45 +94,7 @@ export default function Hero() {
       name.appendChild(wordWrapper);
     });
 
-  const titleWords = titleText.split(" ");
-    const allTitleChars: HTMLElement[] = [];
-
-    titleWords.forEach((word, wordIndex) => {
-      const wordSpan = document.createElement("span");
-      wordSpan.style.display = "inline-block";
-      wordSpan.style.marginRight = "0.5em";
-
-      const chars = word.split("").map((char) => {
-        const span = document.createElement("span") as SpanWithStart;
-        span.textContent = char;
-        span.style.display = "inline-block";
-        span.style.transformOrigin = "center center";
-
-        const directions = [
-          { x: -100, y: -50, rotation: 30 },
-          { x: 100, y: -50, rotation: -30 },
-          { x: -100, y: 50, rotation: -30 },
-          { x: 100, y: 50, rotation: 30 },
-          { x: 0, y: -80, rotation: 0 },
-          { x: 0, y: 80, rotation: 0 },
-          { x: -120, y: 0, rotation: 0 },
-          { x: 120, y: 0, rotation: 0 },
-        ];
-
-        const randomDir = directions[Math.floor(Math.random() * directions.length)];
-  span._startPos = randomDir;
-
-        wordSpan.appendChild(span);
-        return span;
-      });
-
-      title.appendChild(wordSpan);
-      allTitleChars.push(...chars);
-
-      if (wordIndex < titleWords.length - 1) {
-        title.appendChild(document.createTextNode(" "));
-      }
-    });
+    // removed title-related processing
 
     const createSequentialAnimation = (): Promise<void> => {
       return new Promise<void>((resolve) => {
@@ -152,23 +109,14 @@ export default function Hero() {
         });
       });
 
-      allTitleChars.forEach((char) => {
-        const startPos = (char as SpanWithStart)._startPos as StartPos;
-        gsap.set(char, {
-          opacity: 0,
-          x: startPos.x,
-          y: startPos.y,
-          rotation: startPos.rotation,
-          scale: 0.3
-        });
-      });
+      // no title chars to preset
 
       const animateNameSequentially = () => {
         let currentIndex = 0;
 
         const animateNext = () => {
           if (currentIndex >= nameChars.length) {
-            animateTitleSequentially();
+            resolve();
             return;
           }
 
@@ -192,46 +140,13 @@ export default function Hero() {
         animateNext();
       };
 
-      const animateTitleSequentially = () => {
-        let currentIndex = 0;
-
-        const animateNext = () => {
-          if (currentIndex >= allTitleChars.length) {
-            resolve();
-            return;
-          }
-
-          const char = allTitleChars[currentIndex] as SpanWithStart;
-
-          gsap.to(char, {
-            opacity: 1,
-            x: 0,
-            y: 0,
-            rotation: 0,
-            scale: 1,
-            duration: 0.3,
-            ease: "power3.out",
-            delay: currentIndex * 0.02,
-            onComplete: () => {
-              currentIndex++;
-              if (currentIndex < allTitleChars.length) {
-                animateNext();
-              } else {
-                resolve();
-              }
-            }
-          });
-        };
-
-        animateNext();
-      };
-
       animateNameSequentially();
       });
     };
 
     createSequentialAnimation().then(() => {
-      gsap.to(title, {
+      const moveTarget = name;
+      gsap.to(moveTarget, {
         scale: 1.02,
         duration: 4,
         ease: "power2.inOut",
@@ -315,7 +230,7 @@ export default function Hero() {
         const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
         const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
 
-        gsap.to(title, {
+        gsap.to(moveTarget, {
           x: x * 20,
           y: y * 20,
           duration: 0.8,
@@ -401,12 +316,6 @@ export default function Hero() {
             >
               Lenard Roy Arellano
             </h1>
-            <p
-              ref={titleRef}
-              className="text-xl md:text-2xl lg:text-3xl text-muted-foreground font-light"
-            >
-              
-            </p>
           </div>
         </div>
       </div>
