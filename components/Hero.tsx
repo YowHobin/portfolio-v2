@@ -57,33 +57,46 @@ export default function Hero() {
     name.textContent = "";
     title.textContent = "";
 
-    const nameChars = nameText.split("").map((char) => {
-      const span = document.createElement("span") as SpanWithStart;
-      span.textContent = char;
-      span.style.display = "inline-block";
-      span.style.transformOrigin = "center center";
+    const nameChars: SpanWithStart[] = [];
+    const nameWords = nameText.trim().split(/\s+/);
 
-      const directions = [
-        { x: -200, y: -100, rotation: 45 },
-        { x: 200, y: -100, rotation: -45 },
-        { x: -200, y: 100, rotation: -45 },
-        { x: 200, y: 100, rotation: 45 },
-        { x: 0, y: -150, rotation: 0 },
-        { x: 0, y: 150, rotation: 0 },
-        { x: -250, y: 0, rotation: 0 },
-        { x: 250, y: 0, rotation: 0 },
-        { x: -150, y: -150, rotation: 90 },
-        { x: 150, y: -150, rotation: -90 },
-        { x: -150, y: 150, rotation: -90 },
-        { x: 150, y: 150, rotation: 90 },
-      ];
+    nameWords.forEach((word, wIndex) => {
+      const wordWrapper = document.createElement("span");
+      wordWrapper.style.display = "inline-block";
+      wordWrapper.style.whiteSpace = "nowrap";
+      if (wIndex < nameWords.length - 1) {
+        wordWrapper.style.marginRight = "0.4em";
+      }
 
-      const randomDir = directions[Math.floor(Math.random() * directions.length)];
+      word.split("").forEach((char) => {
+        const span = document.createElement("span") as SpanWithStart;
+        span.textContent = char;
+        span.style.display = "inline-block";
+        span.style.transformOrigin = "center center";
 
-  span._startPos = randomDir;
+        const directions = [
+          { x: -200, y: -100, rotation: 45 },
+          { x: 200, y: -100, rotation: -45 },
+          { x: -200, y: 100, rotation: -45 },
+          { x: 200, y: 100, rotation: 45 },
+          { x: 0, y: -150, rotation: 0 },
+          { x: 0, y: 150, rotation: 0 },
+          { x: -250, y: 0, rotation: 0 },
+          { x: 250, y: 0, rotation: 0 },
+          { x: -150, y: -150, rotation: 90 },
+          { x: 150, y: -150, rotation: -90 },
+          { x: -150, y: 150, rotation: -90 },
+          { x: 150, y: 150, rotation: 90 },
+        ];
 
-      name.appendChild(span);
-      return span;
+        const randomDir = directions[Math.floor(Math.random() * directions.length)];
+        span._startPos = randomDir;
+
+        wordWrapper.appendChild(span);
+        nameChars.push(span);
+      });
+
+      name.appendChild(wordWrapper);
     });
 
   const titleWords = titleText.split(" ");
@@ -384,7 +397,7 @@ export default function Hero() {
           <div>
             <h1
               ref={nameRef}
-              className="text-[6rem] md:text-8xl lg:text-[13rem] font-bold tracking-tight text-foreground mb-4"
+              className="text-[6rem] md:text-9xl lg:text-[10rem] xl:text-[12rem] font-bold tracking-tight text-foreground mb-4"
             >
               Lenard Roy Arellano
             </h1>
