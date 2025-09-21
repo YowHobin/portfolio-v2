@@ -19,6 +19,9 @@ interface ScrollFloatProps {
   scrollEnd?: string;
   stagger?: number;
   scrub?: boolean | number;
+  onAnimationComplete?: () => void;
+  onReset?: () => void;
+  onFirstSegmentComplete?: () => void;
 }
 
 const ScrollFloat: React.FC<ScrollFloatProps> = ({
@@ -31,9 +34,13 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
   scrollStart = 'center bottom+=50%',
   scrollEnd = 'bottom bottom-=40%',
   stagger = 0.03,
-  scrub = true
+  scrub = true,
+  onAnimationComplete,
+  onReset,
+  onFirstSegmentComplete
 }) => {
   const containerRef = useRef<HTMLHeadingElement>(null);
+  const firstFiredRef = useRef(false);
 
   const splitText = useMemo(() => {
     const text = typeof children === 'string' ? children : '';
@@ -55,6 +62,14 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
     const scroller = scrollContainerRef && scrollContainerRef.current ? scrollContainerRef.current : window;
 
     const charElements = el.querySelectorAll('.inline-block');
+
+    const rawText = typeof children === 'string' ? children : '';
+    const newlineIndex = rawText.indexOf('\n');
+    const totalChars = charElements.length;
+    const firstSegmentChars = newlineIndex >= 0 ? Math.min(Math.max(newlineIndex, 1), totalChars) : totalChars;
+    const totalDuration = (Math.max(totalChars, 1) - 1) * stagger + animationDuration;
+    const firstSegmentDuration = (Math.max(firstSegmentChars, 1) - 1) * stagger + animationDuration;
+    const firstThreshold = totalDuration > 0 ? firstSegmentDuration / totalDuration : 1;
 
     gsap.fromTo(
       charElements,
@@ -79,11 +94,30 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
           scroller,
           start: scrollStart,
           end: scrollEnd,
-          scrub: scrub
+          scrub: scrub,
+          onUpdate: (self) => {
+            if (!firstFiredRef.current && self.progress >= firstThreshold) {
+              firstFiredRef.current = true;
+              if (typeof onFirstSegmentComplete === 'function') {
+                onFirstSegmentComplete();
+              }
+            }
+          },
+          onLeave: () => {
+            if (typeof onAnimationComplete === 'function') {
+              onAnimationComplete();
+            }
+          },
+          onEnterBack: () => {
+            firstFiredRef.current = false;
+            if (typeof onReset === 'function') {
+              onReset();
+            }
+          }
         }
       }
     );
-  }, [scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger, scrub]);
+  }, [children, scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger, scrub, onAnimationComplete, onReset, onFirstSegmentComplete]);
 
   return (
     <h2 ref={containerRef} className={`overflow-hidden ${containerClassName}`}>
