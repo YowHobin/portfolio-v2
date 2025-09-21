@@ -36,6 +36,7 @@ export default function ThemeToggle() {
     const next = theme === THEME_DARK ? THEME_LIGHT : THEME_DARK;
     setTheme(next);
     window.localStorage.setItem(STORAGE_KEY, next);
+    document.cookie = `theme=${encodeURIComponent(next)}; Max-Age=31536000; Path=/; SameSite=Lax`;
     if (next === THEME_DARK) {
       document.documentElement.classList.add("dark");
       document.documentElement.setAttribute("data-theme", THEME_DARK);

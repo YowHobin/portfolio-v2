@@ -248,40 +248,52 @@ export default function Hero() {
   el._cleanupMouseMove = cleanup;
     });
 
-    const header = document.querySelector("header");
+    const header = document.querySelector("header") as HTMLElement | null;
+    let disconnectObserver: (() => void) | null = null;
     if (header) {
+      const rect = el.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight * 0.9 && rect.bottom > window.innerHeight * 0.1;
+      if (document.documentElement.classList.contains("at-hero")) {
+        document.documentElement.classList.remove("at-hero");
+      }
+      gsap.set(header, { y: inView ? "-100%" : "0%", opacity: inView ? 0 : 1 });
+      if (inView) header.classList.add("header-hidden"); else header.classList.remove("header-hidden");
+
+      let hidden = inView;
       const heroObserver = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && !hidden) {
+              hidden = true;
               gsap.to(header, {
                 y: "-100%",
                 opacity: 0,
                 duration: 0.6,
                 ease: "power2.inOut"
               });
-            } else {
+              header.classList.add("header-hidden");
+            } else if (!entry.isIntersecting && hidden) {
+              hidden = false;
               gsap.to(header, {
                 y: "0%",
                 opacity: 1,
                 duration: 0.6,
                 ease: "power2.inOut"
               });
+              header.classList.remove("header-hidden");
             }
           });
         },
         { threshold: 0.1 }
       );
-
       heroObserver.observe(el);
-
-      return () => {
-        heroObserver.disconnect();
-        if (el._cleanupMouseMove) {
-          el._cleanupMouseMove();
-        }
-      };
+      disconnectObserver = () => heroObserver.disconnect();
     }
+
+    return () => {
+      if (disconnectObserver) disconnectObserver();
+      if (el._cleanupMouseMove) el._cleanupMouseMove();
+    };
   }, []);
 
   return (

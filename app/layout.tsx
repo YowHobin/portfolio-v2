@@ -1,6 +1,8 @@
 
 
 import type { Metadata } from "next";
+import Script from "next/script";
+import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -33,23 +35,33 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const serverTheme = cookieStore.get("theme")?.value;
+  const isDark = serverTheme === "dark";
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
+    <html lang="en" suppressHydrationWarning className={isDark ? "dark" : undefined} {...(isDark ? { "data-theme": "dark" } : {})}>
+      <head suppressHydrationWarning>
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
-            __html: `(() => { try { const STORAGE_KEY='theme'; const DARK='dark'; const LIGHT='light'; const stored = localStorage.getItem(STORAGE_KEY); const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; const theme = stored || (prefersDark ? DARK : LIGHT); if (theme === DARK) { document.documentElement.classList.add('dark'); document.documentElement.setAttribute('data-theme', DARK); } else { document.documentElement.classList.remove('dark'); document.documentElement.removeAttribute('data-theme'); } } catch(_){} })();`,
+            __html: `(() => { try { const COOKIE_NAME='theme'; const STORAGE_KEY='theme'; const DARK='dark'; const LIGHT='light'; const readCookie=(n)=>{const m=document.cookie.match(new RegExp('(?:^|; )'+n.replace(/[.$?*|{}()\[\]\\\/\+^]/g,'\\$&')+'=([^;]*)'));return m?decodeURIComponent(m[1]):null;}; const writeCookie=(n,v)=>{document.cookie = n+'='+encodeURIComponent(v)+'; Max-Age=31536000; Path=/; SameSite=Lax';}; const cookie = readCookie(COOKIE_NAME); const stored = cookie || localStorage.getItem(STORAGE_KEY); const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; const desired = stored || (prefersDark ? DARK : LIGHT); const html = document.documentElement; const hasDark = html.classList.contains('dark') || html.getAttribute('data-theme') === DARK; if (desired === DARK && !hasDark) { html.classList.add('dark'); html.setAttribute('data-theme', DARK); } else if (desired !== DARK && hasDark) { html.classList.remove('dark'); html.removeAttribute('data-theme'); } if (cookie !== desired) { writeCookie(COOKIE_NAME, desired); } } catch(_){} })();`,
+          }}
+        />
+        <Script
+          id="header-fallback"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try { if (window.scrollY < 2 && !location.hash) { document.documentElement.classList.add('at-hero'); } } catch(_){} })();`,
           }}
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ClickSpark
           sparkColor="#fff"
           sparkSize={10}
