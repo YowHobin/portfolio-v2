@@ -4,9 +4,10 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
+import SidebarNav from "@/components/SidebarNav";
 import ScrollProgress from "@/components/ScrollProgress";
 import ClickSpark from "@/components/common/ClickSpark";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,8 +67,11 @@ export default async function RootLayout({
           duration={400}
         >
           <ScrollProgress />
-          <Header />
+          <SidebarNav />
           <main className="overflow-x-hidden">{children}</main>
+          <div className="fixed left-6 bottom-6 z-50">
+            <ThemeToggle />
+          </div>
           <footer className="mt-24 pb-8">
             <div className="mx-auto max-w-6xl px-4 w-full text-sm text-muted-foreground">
               © {new Date().getFullYear()} Lenard Arellano. All rights reserved.

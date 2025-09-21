@@ -11,6 +11,7 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState<string | null>(null);
   const sunRef = useRef<SVGSVGElement>(null);
   const moonRef = useRef<SVGSVGElement>(null);
+  const rippleRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -37,16 +38,22 @@ export default function ThemeToggle() {
     setTheme(next);
     window.localStorage.setItem(STORAGE_KEY, next);
     document.cookie = `theme=${encodeURIComponent(next)}; Max-Age=31536000; Path=/; SameSite=Lax`;
+    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+    const ripple = rippleRef.current;
+    if (ripple) {
+      gsap.set(ripple, { scale: 0, opacity: 0.35, x: 0, y: 0 });
+      tl.to(ripple, { scale: 12, opacity: 0, duration: 0.6 }, 0);
+    }
     if (next === THEME_DARK) {
       document.documentElement.classList.add("dark");
       document.documentElement.setAttribute("data-theme", THEME_DARK);
-      gsap.to(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0, duration: 0.3, ease: "power2.out" });
-      gsap.fromTo(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" });
+      tl.to(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0, duration: 0.3 }, 0)
+        .fromTo(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3 }, 0.05);
     } else {
       document.documentElement.classList.remove("dark");
       document.documentElement.removeAttribute("data-theme");
-      gsap.to(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0, duration: 0.3, ease: "power2.out" });
-      gsap.fromTo(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" });
+      tl.to(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0, duration: 0.3 }, 0)
+        .fromTo(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3 }, 0.05);
     }
   };
 
@@ -54,8 +61,9 @@ export default function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label="Toggle theme"
-      className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm border border-black/10 dark:border-white/10 hover-bg-muted transition-colors"
+      className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm border border-black/10 dark:border-white/10 hover-bg-muted transition-colors glass"
     >
+      <span className="absolute inset-0 rounded-full" ref={rippleRef} style={{ background: "radial-gradient(circle at bottom left, var(--accent), transparent 60%)", pointerEvents: "none" }} aria-hidden />
       <span className="relative inline-flex w-5 h-5 items-center justify-center">
         <svg
           ref={sunRef}

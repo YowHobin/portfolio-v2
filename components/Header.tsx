@@ -70,25 +70,5 @@ export default function Header() {
     return activeId === id;
   };
 
-  return (
-    <header className="fixed top-0 inset-x-0 z-50">
-  <div className="mx-auto max-w-6xl px-4 w-full">
-        <div className="mt-4 glass border border-black/10 dark:border-white/10 rounded-2xl">
-          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-            <Link href="#home" className="font-semibold">LA.dev</Link>
-            <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm nav">
-              {MAIN.map((n) => (
-                <a key={n.id} href={n.href} data-active={isActive(n.id)} className="link-accent">
-                  {n.label}
-                </a>
-              ))}
-            </nav>
-            <div className="flex items-center gap-3 ml-auto">
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
+  return null;
 }
