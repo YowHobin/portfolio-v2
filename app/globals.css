@@ -11,15 +11,6 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --card: oklch(1 0 0);
-html.at-hero header {
-  transform: translateY(-100%);
-  opacity: 0;
-  pointer-events: none;
-}
-
-header.header-hidden {
-  pointer-events: none;
-}
   --card-foreground: oklch(0.145 0 0);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -333,6 +324,19 @@ html {
 /* Header hide/show animation */
 header {
   transition: transform 0.3s ease, opacity 0.3s ease;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+html.at-hero header {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+header.header-hidden {
+  pointer-events: none;
 }
 
 @theme inline {
