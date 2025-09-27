@@ -200,12 +200,16 @@ export default function Hero() {
     const firstPair = pickNextIndices(Math.min(2, letterSpans.length));
     startPairCycle(firstPair);
 
-    // Add scroll-triggered fade animation
+    // Add scroll-triggered fade animation for letters one by one
+    const scrollTl = gsap.timeline();
+    letterSpans.forEach((span, index) => {
+      scrollTl.to(span, { opacity: 0, duration: 0.2 }, index * 0.2);
+    });
     ScrollTrigger.create({
       trigger: el,
       start: "top top",
       end: "bottom top",
-      animation: gsap.fromTo(name, { opacity: 1 }, { opacity: 0 }),
+      animation: scrollTl,
       scrub: true,
     });
 
