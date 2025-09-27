@@ -203,7 +203,7 @@ export default function Hero() {
     // Add scroll-triggered fade animation for letters one by one
     const scrollTl = gsap.timeline();
     letterSpans.forEach((span, index) => {
-      scrollTl.to(span, { opacity: 0, duration: 0.2 }, index * 0.2);
+      scrollTl.to(span, { opacity: 0, duration: 1 }, index * 0.3);
     });
     ScrollTrigger.create({
       trigger: el,
