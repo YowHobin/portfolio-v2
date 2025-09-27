@@ -200,6 +200,15 @@ export default function Hero() {
     const firstPair = pickNextIndices(Math.min(2, letterSpans.length));
     startPairCycle(firstPair);
 
+    // Add scroll-triggered fade animation
+    ScrollTrigger.create({
+      trigger: el,
+      start: "top top",
+      end: "bottom top",
+      animation: gsap.fromTo(name, { opacity: 1 }, { opacity: 0 }),
+      scrub: true,
+    });
+
     const handleMouseMove = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect();
       const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
@@ -268,6 +277,7 @@ export default function Hero() {
   return () => {
     if (disconnectObserver) disconnectObserver();
     if (el._cleanupMouseMove) el._cleanupMouseMove();
+    ScrollTrigger.getAll().forEach(st => st.kill());
   };
   }, []);
 
