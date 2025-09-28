@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Reveal from "../ui/Reveal";
+import TextType from "../common/TextType";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -52,15 +53,17 @@ export default function Me() {
           <div ref={descriptionRef} className="space-y-6">
             <Reveal delay={0.4}>
               <div className="space-y-4 text-lg md:text-xl text-muted-foreground leading-relaxed">
-                <p>
-                  I’ve always been drawn to exploring new technologies and
-                  ideas, not just for the sake of knowing them, but for the way
-                  they expand how I see the world. Curiosity feels less like a
-                  habit and more like a way of living, a reminder that there’s
-                  always something more to learn. To me, growth isn’t about
-                  reaching perfection, but about embracing the endless process
-                  of becoming.
-                </p>
+                <TextType
+                  as="p"
+                  className="max-w-prose"
+                  text="I’ve always been drawn to exploring new technologies and ideas, not just for the sake of knowing them, but for the way they expand how I see the world. Curiosity feels less like a habit and more like a way of living, a reminder that there’s always something more to learn. To me, growth isn’t about reaching perfection, but about embracing the endless process of becoming."
+                  typingSpeed={42}
+                  variableSpeed={{ min: 28, max: 56 }}
+                  initialDelay={200}
+                  loop={false}
+                  startOnVisible
+                  textColors={["currentColor"]}
+                />
               </div>
             </Reveal>
           </div>
