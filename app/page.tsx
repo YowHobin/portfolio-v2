@@ -1,6 +1,7 @@
 import Hero from "@/components/pages/Hero";
 import About from "@/components/pages/About";
 import Bridge from "@/components/common/Bridge";
+import Me from "@/components/pages/Me";
 import Stacks from "@/components/pages/Stacks";
 import Projects from "@/components/pages/Projects";
 import Contact from "@/components/pages/Contact";
@@ -41,17 +42,19 @@ export default function Home() {
             variant: "float",
             containerClassName: "w-full flex justify-start px-2",
             textClassName: "text-6xl lg:text-5xl font-bold tracking-tight",
-            scroll: { start: "top bottom", end: "bottom top", stagger: 0.05, scrub: 1.2, duration: 1 }
+            scroll: { start: "top bottom", end: "center center", stagger: 0.05, scrub: 1.2, duration: 1 }
           },
           {
             text: "here is a little something!",
             variant: "float",
             containerClassName: "w-full flex justify-center mt-2",
             textClassName: "text-6xl lg:text-5xl font-bold tracking-tight",
-            scroll: { start: "top bottom", end: "bottom top", stagger: 0.01, scrub: 1.2, duration: 1 }
+            scroll: { start: "center center", end: "bottom bottom", stagger: 0.05, scrub: 3.2, duration: 1 }
           }
         ]}
       />
+      <Me />
+
 
       {/* <Stacks />
       <Projects />
