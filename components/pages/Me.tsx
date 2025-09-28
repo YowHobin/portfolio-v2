@@ -36,14 +36,14 @@ export default function Me() {
   return (
     <section id="me" className="relative min-h-screen">
       <div className="mx-auto max-w-7xl px-4 w-full h-full   flex items-center justify-center">
-        <div className="grid md:grid-cols-2 gap-12 items-center w-full">
+        <div className="grid md:grid-cols-2 gap-0 items-center w-full">
           <Reveal>
             <div className="relative">
-              <div className=" rounded-2xl overflow-hidden  p-1">
+              <div className=" rounded-2xl overflow-hidden">
                 <img
                   src="/images/1000231009.jpg"
                   alt="Profile picture"
-                  className="w-full h-[100vh] object-contain rounded-lg"
+                  className="w-full h-[120vh] object-contain rounded-lg"
                 />
               </div>
             </div>
@@ -53,8 +53,13 @@ export default function Me() {
             <Reveal delay={0.4}>
               <div className="space-y-4 text-lg md:text-xl text-muted-foreground leading-relaxed">
                 <p>
-                  A person who loves to explore new technologies and learn new things. Always curious and eager to
-                  know more. I believe in continuous learning and growth.
+                  I’ve always been drawn to exploring new technologies and
+                  ideas, not just for the sake of knowing them, but for the way
+                  they expand how I see the world. Curiosity feels less like a
+                  habit and more like a way of living, a reminder that there’s
+                  always something more to learn. To me, growth isn’t about
+                  reaching perfection, but about embracing the endless process
+                  of becoming.
                 </p>
               </div>
             </Reveal>
