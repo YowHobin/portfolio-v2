@@ -35,16 +35,16 @@ export default function Me() {
   }, []);
 
   return (
-    <section id="me" className="relative min-h-screen">
+    <section id="me" className="relative min-h-screen py-19">
       <div className="mx-auto max-w-7xl px-4 w-full h-full   flex items-center justify-center">
-        <div className="grid md:grid-cols-2 gap-0 items-center w-full">
+        <div className="grid md:grid-cols-2 gap-8 sm:gap-0 items-center w-full">
           <Reveal>
             <div className="relative">
               <div className=" rounded-2xl overflow-hidden">
                 <img
                   src="/images/1000231009.jpg"
                   alt="Profile picture"
-                  className="w-full h-[120vh] object-contain rounded-lg"
+                  className="w-full  sm:h-[120vh] object-contain rounded-lg"
                 />
               </div>
             </div>

@@ -18,17 +18,30 @@ export default function Home() {
           {
             text: "is",
             variant: "float",
-            containerClassName: "w-full flex justify-end px-2",
-            textClassName: "text-6xl lg:text-5xl font-bold tracking-tight",
-            scroll: { start: "top bottom", end: "bottom top", stagger: 0.05, scrub: 1.2, duration: 1 }
+            containerClassName:
+              "w-full flex justify-center sm:justify-end px-2",
+            textClassName: "text-3xl md:text-6xl font-bold tracking-tight",
+            scroll: {
+              start: "top bottom",
+              end: "bottom top",
+              stagger: 0.05,
+              scrub: 1.2,
+              duration: 1,
+            },
           },
           {
             text: "a",
             variant: "float",
-            containerClassName: "w-full flex justify-center mt-2",
-            textClassName: "text-6xl lg:text-5xl font-bold tracking-tight",
-            scroll: { start: "top bottom", end: "bottom top", stagger: 0.05, scrub: 1.2, duration: 1 }
-          }
+            containerClassName: "w-full flex justify-start sm:justify-center mt-2",
+            textClassName: "text-3xl md:text-6xl font-bold tracking-tight",
+            scroll: {
+              start: "top bottom",
+              end: "bottom top",
+              stagger: 0.05,
+              scrub: 1.2,
+              duration: 1,
+            },
+          },
         ]}
       />
       <About />
@@ -40,21 +53,35 @@ export default function Home() {
           {
             text: "curious aren't we?",
             variant: "float",
-            containerClassName: "w-full flex justify-start px-2",
-            textClassName: "text-6xl lg:text-5xl font-bold tracking-tight",
-            scroll: { start: "top bottom", end: "center center", stagger: 0.05, scrub: 1.2, duration: 1 }
+            containerClassName:
+              "w-full flex justify-center sm:justify-start px-2",
+            textClassName:
+              "text-3xl md:text-5xl font-bold tracking-tight break-words",
+            scroll: {
+              start: "top bottom",
+              end: "center center",
+              stagger: 0.05,
+              scrub: 1.2,
+              duration: 1,
+            },
           },
           {
             text: "here is a little something!",
             variant: "float",
-            containerClassName: "w-full flex justify-center mt-2",
-            textClassName: "text-6xl lg:text-5xl font-bold tracking-tight",
-            scroll: { start: "center center", end: "bottom bottom", stagger: 0.05, scrub: 3.2, duration: 1 }
-          }
+            containerClassName: "w-full flex justify-center  mt-2",
+            textClassName:
+              "text-3xl md:text-5xl font-bold tracking-tight break-words text-foreground",
+            scroll: {
+              start: "center center",
+              end: "bottom bottom",
+              stagger: 0.05,
+              scrub: 3.2,
+              duration: 1,
+            },
+          },
         ]}
       />
       <Me />
-
 
       {/* <Stacks />
       <Projects />
