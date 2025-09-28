@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import ScrollFloat from "./common/ScrollFloat";
-import { SparklesText } from "./ui/sparkles-text";
+import ScrollFloat from "../common/ScrollFloat";
+import { SparklesText } from "../ui/sparkles-text";
 
 export default function About() {
   const [sparklesFirstLine, setSparklesFirstLine] = useState(false);

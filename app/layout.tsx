@@ -4,10 +4,10 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import SidebarNav from "@/components/SidebarNav";
-import ScrollProgress from "@/components/ScrollProgress";
+import SidebarNav from "@/components/common/SidebarNav";
+import ScrollProgress from "@/components/ui/ScrollProgress";
 import ClickSpark from "@/components/common/ClickSpark";
-import ThemeToggle from "@/components/ThemeToggle";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

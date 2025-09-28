@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Reveal from "./Reveal";
+import Reveal from "../ui/Reveal";
 
 const MAX_MSG = 1000 as const;
 

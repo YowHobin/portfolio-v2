@@ -1,7 +1,7 @@
 "use client";
 
-import Reveal from "./Reveal";
-import ScrollFloat from "./common/ScrollFloat";
+import Reveal from "../ui/Reveal";
+import ScrollFloat from "./ScrollFloat";
 import { createElement, useId } from "react";
 import type { CSSProperties, ElementType } from "react";
 

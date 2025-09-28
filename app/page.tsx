@@ -1,9 +1,9 @@
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Bridge from "@/components/Bridge";
-import Stacks from "@/components/Stacks";
-import Projects from "@/components/Projects";
-import Contact from "@/components/Contact";
+import Hero from "@/components/pages/Hero";
+import About from "@/components/pages/About";
+import Bridge from "@/components/common/Bridge";
+import Stacks from "@/components/pages/Stacks";
+import Projects from "@/components/pages/Projects";
+import Contact from "@/components/pages/Contact";
 
 export default function Home() {
   return (
@@ -11,7 +11,7 @@ export default function Home() {
       <Hero />
       <Bridge
         id="bridge"
-        height={{ base: 10, md: 50 }}
+        height={{ base: 10, md: 30 }}
         className="mx-auto max-w-6xl px-4 py-6"
         items={[
           {
@@ -31,6 +31,28 @@ export default function Home() {
         ]}
       />
       <About />
+      <Bridge
+        id="bridge2"
+        height={{ base: 10, md: 30 }}
+        className="mx-auto max-w-6xl px-4 py-6"
+        items={[
+          {
+            text: "curious aren't we?",
+            variant: "float",
+            containerClassName: "w-full flex justify-start px-2",
+            textClassName: "text-6xl lg:text-5xl font-bold tracking-tight",
+            scroll: { start: "top bottom", end: "bottom top", stagger: 0.05, scrub: 1.2, duration: 1 }
+          },
+          {
+            text: "here is a little something!",
+            variant: "float",
+            containerClassName: "w-full flex justify-center mt-2",
+            textClassName: "text-6xl lg:text-5xl font-bold tracking-tight",
+            scroll: { start: "top bottom", end: "bottom top", stagger: 0.01, scrub: 1.2, duration: 1 }
+          }
+        ]}
+      />
+
       {/* <Stacks />
       <Projects />
       <Contact /> */}
