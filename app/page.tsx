@@ -32,7 +32,7 @@ export default function Home() {
           {
             text: "a",
             variant: "float",
-            containerClassName: "w-full flex justify-start sm:justify-center mt-2",
+            containerClassName: "w-full flex justify-center mt-2",
             textClassName: "text-3xl md:text-6xl font-bold tracking-tight",
             scroll: {
               start: "top bottom",
