@@ -51,7 +51,7 @@ export default function Home() {
         className="mx-auto max-w-6xl px-4 py-6"
         items={[
           {
-            text: "curious aren't we?",
+            text: "curious aren't wea?",
             variant: "float",
             containerClassName:
               "w-full flex justify-center sm:justify-start px-2",
