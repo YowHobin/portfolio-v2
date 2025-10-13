@@ -36,21 +36,21 @@ export default function Me() {
 
   return (
     <section id="me" className="relative min-h-screen py-19">
-      <div className="mx-auto max-w-7xl px-4 w-full h-full   flex items-center justify-center">
-        <div className="grid md:grid-cols-2 gap-8 sm:gap-0 items-center w-full">
+      <div className="mx-auto max-w-7xl px-6 w-full h-full   flex items-center justify-center">
+        <div className="grid xl:grid-cols-2 gap-8 xl:gap-0 items-center w-full">
           <Reveal>
             <div className="relative">
-              <div className=" rounded-2xl overflow-hidden">
+              <div className=" rounded-2xl overflow-hidden ">
                 <img
                   src="/images/1000231009.jpg"
                   alt="Profile picture"
-                  className="w-full  sm:h-[120vh] object-contain rounded-lg"
+                  className="w-full sm:h-[120vh] object-cover object-[15%_35%] rounded-lg"
                 />
               </div>
             </div>
           </Reveal>
 
-          <div ref={descriptionRef} className="space-y-6">
+          <div ref={descriptionRef} className="space-y-6 xl:px-6">
             <Reveal delay={0.4}>
               <div className="space-y-4 text-lg md:text-xl text-muted-foreground leading-relaxed">
                 <TextType

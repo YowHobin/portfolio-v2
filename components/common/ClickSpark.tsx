@@ -19,52 +19,58 @@ interface Spark {
   startTime: number;
 }
 
+const FULL_CIRCLE = Math.PI * 2;
+const DEFAULT_SPARK_COLOR = "#fff";
+const DEFAULT_SPARK_SIZE = 10;
+const DEFAULT_SPARK_RADIUS = 15;
+const DEFAULT_SPARK_COUNT = 8;
+const DEFAULT_DURATION = 400;
+const DEFAULT_EXTRA_SCALE = 1;
+const DEFAULT_CANVAS_POSITION = "fixed";
+const DEFAULT_Z_INDEX_CLASS = "z-50";
+
 const ClickSpark: React.FC<ClickSparkProps> = ({
-  sparkColor = "#fff",
-  sparkSize = 10,
-  sparkRadius = 15,
-  sparkCount = 8,
-  duration = 400,
+  sparkColor = DEFAULT_SPARK_COLOR,
+  sparkSize = DEFAULT_SPARK_SIZE,
+  sparkRadius = DEFAULT_SPARK_RADIUS,
+  sparkCount = DEFAULT_SPARK_COUNT,
+  duration = DEFAULT_DURATION,
   easing = "ease-out",
-  extraScale = 1.0,
+  extraScale = DEFAULT_EXTRA_SCALE,
   children,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sparksRef = useRef<Spark[]>([]);
-  const startTimeRef = useRef<number | null>(null);
+  const setCanvasSize = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+    const context = canvas.getContext("2d");
+    if (!context) {
+      return;
+    }
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(width * devicePixelRatio);
+    canvas.height = Math.floor(height * devicePixelRatio);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.scale(devicePixelRatio, devicePixelRatio);
+  }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const parent = canvas.parentElement;
-    if (!parent) return;
-
-    let resizeTimeout: NodeJS.Timeout;
-
-    const resizeCanvas = () => {
-      const { width, height } = parent.getBoundingClientRect();
-      if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width;
-        canvas.height = height;
-      }
-    };
-
+    setCanvasSize();
     const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(resizeCanvas, 100);
+      setCanvasSize();
     };
-
-    const ro = new ResizeObserver(handleResize);
-    ro.observe(parent);
-
-    resizeCanvas();
-
+    window.addEventListener("resize", handleResize);
     return () => {
-      ro.disconnect();
-      clearTimeout(resizeTimeout);
+      window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [setCanvasSize]);
 
   const easeFunc = useCallback(
     (t: number) => {
@@ -91,9 +97,6 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
     let animationId: number;
 
     const draw = (timestamp: number) => {
-      if (!startTimeRef.current) {
-        startTimeRef.current = timestamp;
-      }
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
       sparksRef.current = sparksRef.current.filter((spark: Spark) => {
@@ -141,32 +144,42 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
     extraScale,
   ]);
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>): void => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const now = performance.now();
-    const newSparks: Spark[] = Array.from({ length: sparkCount }, (_, i) => ({
-      x,
-      y,
-      angle: (2 * Math.PI * i) / sparkCount,
-      startTime: now,
-    }));
-
-    sparksRef.current.push(...newSparks);
-  };
+  useEffect(() => {
+    const handleGlobalClick = (event: MouseEvent) => {
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        return;
+      }
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const now = performance.now();
+      const newSparks: Spark[] = Array.from(
+        { length: sparkCount },
+        (_, index) => ({
+          x,
+          y,
+          angle: (FULL_CIRCLE * index) / sparkCount,
+          startTime: now,
+        })
+      );
+      sparksRef.current.push(...newSparks);
+    };
+    window.addEventListener("click", handleGlobalClick);
+    return () => {
+      window.removeEventListener("click", handleGlobalClick);
+    };
+  }, [sparkCount]);
 
   return (
-    <div className="relative w-full h-full" onClick={handleClick}>
+    <>
+      {children}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 pointer-events-none"
+        className={`pointer-events-none inset-0 ${DEFAULT_Z_INDEX_CLASS}`}
+        style={{ position: DEFAULT_CANVAS_POSITION }}
       />
-      {children}
-    </div>
+    </>
   );
 };
 
