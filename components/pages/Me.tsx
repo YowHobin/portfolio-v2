@@ -16,7 +16,7 @@ export default function Me() {
   const imageRef = useRef<HTMLImageElement | null>(null);
 
   const FULL_TEXT =
-    "I’ve asd always been drawn to exploring new technologies and ideas, not just for the sake of knowing them, but for the way they expand how I see the world. Curiosity feels less like a habit and more like a way of living, a reminder that there’s always something more to learn. To me, growth isn’t about reaching perfection, but about embracing the endless process of becoming.";
+    "I’ve always been drawn to exploring new technologies and ideas, not just for the sake of knowing them, but for the way they expand how I see the world. Curiosity feels less like a habit and more like a way of living, a reminder that there’s always something more to learn. To me, growth isn’t about reaching perfection, but about embracing the endless process of becoming.";
 
   useEffect(() => {
     if (!descriptionRef.current || !textRef.current) return;
