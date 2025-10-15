@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, ReactNode, RefObject } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Highlighter } from '../ui/highlighter';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -23,6 +24,21 @@ interface ScrollFloatProps {
   onReset?: () => void;
   onFirstSegmentComplete?: () => void;
   secondLineIndentClassName?: string;
+  onLeaveBack?: () => void;
+  annotations?: Array<{
+    phrase: string;
+    action?: 'highlight' | 'underline' | 'box' | 'circle' | 'strike-through' | 'crossed-off' | 'bracket';
+    color?: string;
+    colorLight?: string;
+    colorDark?: string;
+    strokeWidth?: number;
+    animationDuration?: number;
+    iterations?: number;
+    padding?: number;
+    multiline?: boolean;
+  }>;
+  highlightActive?: boolean;
+  onFirstSegmentDeactivate?: () => void;
 }
 
 const ScrollFloat: React.FC<ScrollFloatProps> = ({
@@ -39,37 +55,96 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
   onAnimationComplete,
   onReset,
   onFirstSegmentComplete,
-  secondLineIndentClassName = ''
+  secondLineIndentClassName = '',
+  onLeaveBack,
+  annotations = [],
+  highlightActive = false,
+  onFirstSegmentDeactivate,
 }) => {
   const containerRef = useRef<HTMLHeadingElement>(null);
   const firstFiredRef = useRef(false);
 
   const splitText = useMemo(() => {
     const text = typeof children === 'string' ? children : '';
-    const out: React.ReactNode[] = [];
+    type Ann = Required<Pick<NonNullable<ScrollFloatProps['annotations']>[number], 'phrase'>> & Omit<NonNullable<ScrollFloatProps['annotations']>[number], 'phrase'>;
+    const anns: Ann[] = (annotations || []).filter(a => a && a.phrase && text.includes(a.phrase)) as Ann[];
+    const starts: Record<number, Ann[]> = {};
+    const ends: Record<number, Ann[]> = {};
+    anns.forEach((cfg, idx) => {
+      const startIdx = text.indexOf(cfg.phrase);
+      if (startIdx >= 0) {
+        const endIdx = startIdx + cfg.phrase.length;
+        if (!starts[startIdx]) starts[startIdx] = [];
+        if (!ends[endIdx]) ends[endIdx] = [];
+        starts[startIdx].push(cfg);
+        ends[endIdx].push(cfg);
+      }
+    });
+
+    const root: React.ReactNode[] = [];
+    const stack: { cfg: Ann; children: React.ReactNode[]; key: string }[] = [];
+
+    const pushNode = (node: React.ReactNode) => {
+      if (stack.length > 0) stack[stack.length - 1].children.push(node);
+      else root.push(node);
+    };
+
     for (let i = 0; i < text.length; i++) {
+      if (starts[i]) {
+        starts[i].forEach((cfg, j) => {
+          const key = `ann-${i}-${j}-${cfg.action ?? 'highlight'}`;
+          stack.push({ cfg, children: [], key });
+        });
+      }
+
       const char = text[i];
       if (char === '\n') {
-        out.push(<br key={`br-${i}`} />);
+        pushNode(<br key={`br-${i}`} />);
         if (secondLineIndentClassName) {
-          out.push(
-            <span
-              key={`indent-${i}`}
-              aria-hidden
-              className={`inline-block ${secondLineIndentClassName}`}
-            />
+          pushNode(
+            <span key={`indent-${i}`} aria-hidden className={`inline-block ${secondLineIndentClassName}`} />
           );
         }
       } else {
-        out.push(
+        pushNode(
           <span className="inline-block word" key={i}>
             {char === ' ' ? '\u00A0' : char}
           </span>
         );
       }
+
+      const endKey = i + 1;
+      if (ends[endKey]) {
+        for (let k = 0; k < ends[endKey].length; k++) {
+          const top = stack.pop();
+          if (top) {
+            const annEl = (
+              <Highlighter
+                key={top.key}
+                action={top.cfg.action ?? 'highlight'}
+                color={top.cfg.color}
+                colorLight={top.cfg.colorLight}
+                colorDark={top.cfg.colorDark}
+                strokeWidth={top.cfg.strokeWidth}
+                animationDuration={top.cfg.animationDuration}
+                iterations={top.cfg.iterations}
+                padding={top.cfg.padding}
+                multiline={top.cfg.multiline ?? true}
+                isView={false}
+                active={highlightActive}
+              >
+                <span className="inline-block">
+                  {top.children}
+                </span>
+              </Highlighter>
+            );
+            pushNode(annEl);
+          }
+        }
+      }
     }
-    return out;
-  }, [children, secondLineIndentClassName]);
+    return root;
+  }, [children, secondLineIndentClassName, annotations, highlightActive]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -117,6 +192,11 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
               if (typeof onFirstSegmentComplete === 'function') {
                 onFirstSegmentComplete();
               }
+            } else if (firstFiredRef.current && self.direction < 0 && self.progress < firstThreshold) {
+              firstFiredRef.current = false;
+              if (typeof onFirstSegmentDeactivate === 'function') {
+                onFirstSegmentDeactivate();
+              }
             }
           },
           onLeave: () => {
@@ -129,11 +209,16 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
             if (typeof onReset === 'function') {
               onReset();
             }
+          },
+          onLeaveBack: () => {
+            if (typeof onLeaveBack === 'function') {
+              onLeaveBack();
+            }
           }
         }
       }
     );
-  }, [children, scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger, scrub, onAnimationComplete, onReset, onFirstSegmentComplete]);
+  }, [children, scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger, scrub, onAnimationComplete, onReset, onFirstSegmentComplete, onLeaveBack]);
 
   return (
     <h2 ref={containerRef} className={`overflow-hidden ${containerClassName}`}>

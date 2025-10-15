@@ -1,4 +1,5 @@
 "use client"
+"use client"
 
 import { useEffect, useRef } from "react"
 import type React from "react"
@@ -53,14 +54,16 @@ export function Highlighter({
     margin: "-10%",
   })
 
-  // If isView is false, always show. If isView is true, wait for inView
   const shouldShow = (!isView || isInView) && active
 
   const resolveDarkMode = (): boolean => {
     if (typeof window === "undefined") return false
     const root = document.documentElement
     if (root.classList.contains("dark")) return true
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+    return (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    )
   }
 
   useEffect(() => {
@@ -70,7 +73,9 @@ export function Highlighter({
     if (!element) return
 
     const isDark = resolveDarkMode()
-    const actualColor = isDark ? (colorDark ?? color) : (colorLight ?? color)
+    const defaultLight = colorLight ?? color
+    const defaultDark = colorDark ?? (action === "highlight" ? "#fde68a" : "#f59e0b")
+    const actualColor = isDark ? defaultDark : defaultLight
 
     const annotationConfig = {
       type: action,
@@ -83,9 +88,11 @@ export function Highlighter({
     }
 
     const annotation = annotate(element, annotationConfig)
-
     annotationRef.current = annotation
     annotationRef.current.show()
+
+    element.style.transition = "opacity 220ms ease"
+    element.style.opacity = "1"
 
     const resizeObserver = new ResizeObserver(() => {
       annotation.hide()
@@ -97,11 +104,16 @@ export function Highlighter({
     resizeObserverRef.current = resizeObserver
 
     return () => {
-      if (element) {
+      try {
+        annotationRef.current?.hide()
+        annotationRef.current?.remove()
+      } catch {}
+      try {
         annotate(element, { type: action }).remove()
-        resizeObserver.disconnect()
-        resizeObserverRef.current = null
-      }
+      } catch {}
+      resizeObserver.disconnect()
+      resizeObserverRef.current = null
+      annotationRef.current = null
     }
   }, [
     shouldShow,
@@ -118,11 +130,24 @@ export function Highlighter({
 
   useEffect(() => {
     if (!shouldShow && annotationRef.current) {
-      try {
-        annotationRef.current.hide()
-        annotationRef.current.remove()
-      } catch {}
-      annotationRef.current = null
+      const el = elementRef.current
+      if (el) {
+        el.style.opacity = "0"
+        const id = window.setTimeout(() => {
+          try {
+            annotationRef.current?.hide()
+            annotationRef.current?.remove()
+          } catch {}
+          annotationRef.current = null
+          window.clearTimeout(id)
+        }, 200)
+      } else {
+        try {
+          annotationRef.current.hide()
+          annotationRef.current.remove()
+        } catch {}
+        annotationRef.current = null
+      }
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect()
         resizeObserverRef.current = null
@@ -131,7 +156,7 @@ export function Highlighter({
   }, [shouldShow])
 
   return (
-    <span ref={elementRef} className="relative inline-block bg-transparent">
+    <span ref={elementRef} className="relative inline-block bg-transparent opacity-0">
       {children}
     </span>
   )

@@ -101,6 +101,29 @@ export default function Home() {
               scrub: 1.2,
               duration: 1,
             },
+
+            annotations: [
+              {
+                phrase: "Don't bore us",
+                action: "highlight",
+                colorLight: "#fde68a",
+                colorDark: "#4c1d95",
+                strokeWidth: 2,
+                animationDuration: 600,
+                padding: 2,
+                multiline: false,
+              },
+              {
+                phrase: "good stuff",
+                action: "underline",
+                colorLight: "#f59e0b",
+                colorDark: "#fbbf24",
+                strokeWidth: 2.5,
+                animationDuration: 600,
+                padding: 3,
+                multiline: false,
+              },
+            ],
           }
         ]}
       />

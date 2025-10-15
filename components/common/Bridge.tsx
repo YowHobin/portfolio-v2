@@ -2,8 +2,9 @@
 
 import Reveal from "../ui/Reveal";
 import ScrollFloat from "./ScrollFloat";
-import { createElement, useId } from "react";
+import { createElement, useId, useMemo, useState } from "react";
 import type { CSSProperties, ElementType } from "react";
+import { Highlighter } from "../ui/highlighter";
 
 type TagName = ElementType;
 
@@ -22,6 +23,30 @@ type BridgeItem = {
     duration?: number;
     ease?: string;
   };
+  highlighter?: {
+    enabled?: boolean;
+    action?: "highlight" | "underline" | "box" | "circle" | "strike-through" | "crossed-off" | "bracket";
+    color?: string;
+    colorLight?: string;
+    colorDark?: string;
+    strokeWidth?: number;
+    animationDuration?: number;
+    iterations?: number;
+    padding?: number;
+    multiline?: boolean;
+  };
+  annotations?: Array<{
+    phrase: string;
+    action?: "highlight" | "underline" | "box" | "circle" | "strike-through" | "crossed-off" | "bracket";
+    color?: string;
+    colorLight?: string;
+    colorDark?: string;
+    strokeWidth?: number;
+    animationDuration?: number;
+    iterations?: number;
+    padding?: number;
+    multiline?: boolean;
+  }>;
 };
 
 type BridgeHeight = "auto" | "half" | "screen" | number | string;
@@ -47,6 +72,17 @@ export default function Bridge({ id, className = "", height, fullHeight = true, 
   const autoId = useId();
   const sectionId = id ?? `bridge-${autoId}`;
   const getTag = (as?: TagName): ElementType => (as ?? ("h2" as ElementType));
+
+  const initialHighlightState = useMemo(() => {
+    const state: Record<string, boolean> = {};
+    items.forEach((item, idx) => {
+      const key = item.id ?? `bridge-item-${idx}`;
+      state[key] = false;
+    });
+    return state;
+  }, [items]);
+  const [highlightActive, setHighlightActive] = useState<Record<string, boolean>>(initialHighlightState);
+  const setActive = (key: string, val: boolean) => setHighlightActive((prev) => ({ ...prev, [key]: val }));
 
   const resolveHeight = (): BridgeHeightProp | undefined => {
     if (typeof height !== "undefined") return height;
@@ -106,7 +142,7 @@ export default function Bridge({ id, className = "", height, fullHeight = true, 
         {items.map((item, idx) => {
           const key = item.id ?? `bridge-item-${idx}`;
           if (item.variant === "float") {
-            return (
+            const floatEl = (
               <ScrollFloat
                 key={key}
                 containerClassName={item.containerClassName ?? ""}
@@ -117,10 +153,39 @@ export default function Bridge({ id, className = "", height, fullHeight = true, 
                 scrub={item.scroll?.scrub ?? 1}
                 animationDuration={item.scroll?.duration ?? 1}
                 ease={item.scroll?.ease ?? "back.inOut(2)"}
+                onFirstSegmentComplete={() => setActive(key, true)}
+                onReset={() => setActive(key, false)}
+                onLeaveBack={() => setActive(key, false)}
+                annotations={item.annotations}
+                highlightActive={!!highlightActive[key]}
+                onFirstSegmentDeactivate={() => setActive(key, false)}
               >
                 {item.text}
               </ScrollFloat>
             );
+
+            if (item.highlighter?.enabled) {
+              return (
+                <Highlighter
+                  key={`${key}-hl`}
+                  action={item.highlighter.action ?? "highlight"}
+                  color={item.highlighter.color}
+                  colorLight={item.highlighter.colorLight}
+                  colorDark={item.highlighter.colorDark}
+                  strokeWidth={item.highlighter.strokeWidth}
+                  animationDuration={item.highlighter.animationDuration}
+                  iterations={item.highlighter.iterations}
+                  padding={item.highlighter.padding}
+                  multiline={item.highlighter.multiline ?? true}
+                  isView={false}
+                  active={!!highlightActive[key]}
+                >
+                  {floatEl}
+                </Highlighter>
+              );
+            }
+
+            return floatEl;
           }
 
           if (item.variant === "reveal") {
