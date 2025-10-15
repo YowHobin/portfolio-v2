@@ -60,7 +60,8 @@ export default async function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ClickSpark
-          sparkColor="#fff"
+          sparkColorDark="#ffffff"
+          sparkColorLight="#111111"
           sparkSize={10}
           sparkRadius={15}
           sparkCount={8}

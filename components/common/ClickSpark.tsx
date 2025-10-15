@@ -3,6 +3,8 @@ import React, { useRef, useEffect, useCallback } from "react";
 
 interface ClickSparkProps {
   sparkColor?: string;
+  sparkColorLight?: string;
+  sparkColorDark?: string;
   sparkSize?: number;
   sparkRadius?: number;
   sparkCount?: number;
@@ -20,7 +22,8 @@ interface Spark {
 }
 
 const FULL_CIRCLE = Math.PI * 2;
-const DEFAULT_SPARK_COLOR = "#fff";
+const DEFAULT_SPARK_COLOR_LIGHT = "#111111";
+const DEFAULT_SPARK_COLOR_DARK = "#ffffff";
 const DEFAULT_SPARK_SIZE = 10;
 const DEFAULT_SPARK_RADIUS = 15;
 const DEFAULT_SPARK_COUNT = 8;
@@ -30,7 +33,9 @@ const DEFAULT_CANVAS_POSITION = "fixed";
 const DEFAULT_Z_INDEX_CLASS = "z-50";
 
 const ClickSpark: React.FC<ClickSparkProps> = ({
-  sparkColor = DEFAULT_SPARK_COLOR,
+  sparkColor,
+  sparkColorLight = DEFAULT_SPARK_COLOR_LIGHT,
+  sparkColorDark = DEFAULT_SPARK_COLOR_DARK,
   sparkSize = DEFAULT_SPARK_SIZE,
   sparkRadius = DEFAULT_SPARK_RADIUS,
   sparkCount = DEFAULT_SPARK_COUNT,
@@ -116,7 +121,12 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
         const x2 = spark.x + (distance + lineLength) * Math.cos(spark.angle);
         const y2 = spark.y + (distance + lineLength) * Math.sin(spark.angle);
 
-        ctx.strokeStyle = sparkColor;
+        const isDark =
+          document.documentElement.classList.contains("dark") ||
+          document.documentElement.getAttribute("data-theme") === "dark";
+        const resolvedColor = sparkColor || (isDark ? sparkColorDark : sparkColorLight);
+
+        ctx.strokeStyle = resolvedColor;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(x1, y1);
@@ -136,6 +146,8 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
     };
   }, [
     sparkColor,
+    sparkColorLight,
+    sparkColorDark,
     sparkSize,
     sparkRadius,
     sparkCount,
