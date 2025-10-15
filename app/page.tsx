@@ -48,7 +48,7 @@ export default function Home() {
         className="mx-auto max-w-6xl px-4 py-6"
         items={[
           {
-            text: "Come on! Don't bore us now. Take me to the good stuff.",
+            text: "Come on! Don't bore us now. Take us to the good stuff!",
             variant: "float",
             containerClassName: "w-full text-center px-2",
             textClassName:
