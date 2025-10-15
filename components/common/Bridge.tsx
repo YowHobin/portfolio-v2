@@ -182,13 +182,13 @@ export default function Bridge({ id, className = "", height, fullHeight = true, 
               return (
                 <RoughNotation
                   key={`${key}-hl-${themeVersion}`}
-                  type={(item.highlighter.action ?? "highlight") as any}
-                  color={color as any}
-                  strokeWidth={item.highlighter.strokeWidth as any}
-                  animationDuration={(item.highlighter.animationDuration ?? 600) as any}
-                  iterations={item.highlighter.iterations as any}
-                  padding={item.highlighter.padding as any}
-                  multiline={(item.highlighter.multiline ?? true) as any}
+                  type={(item.highlighter.action ?? "highlight") as "highlight" | "underline" | "box" | "circle" | "strike-through" | "crossed-off" | "bracket"}
+                  color={color}
+                  strokeWidth={item.highlighter.strokeWidth}
+                  animationDuration={item.highlighter.animationDuration ?? 600}
+                  iterations={item.highlighter.iterations}
+                  padding={item.highlighter.padding}
+                  multiline={item.highlighter.multiline ?? true}
                   show={!!highlightActive[key]}
                   data-theme-version={themeVersion}
                 >

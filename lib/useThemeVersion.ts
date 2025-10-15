@@ -12,10 +12,11 @@ export function useThemeVersion(): number {
 
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const mqHandler = () => bump();
-    try {
-      mq.addEventListener('change', mqHandler);
-    } catch {
-      // @ts-ignore
+    if ('addEventListener' in mq) {
+      mq.addEventListener('change', mqHandler as EventListener);
+    } else {
+      // Safari fallback
+      // @ts-expect-error legacy API
       mq.addListener(mqHandler);
     }
 
@@ -35,10 +36,11 @@ export function useThemeVersion(): number {
 
     return () => {
       observer.disconnect();
-      try {
-        mq.removeEventListener('change', mqHandler);
-      } catch {
-        // @ts-ignore
+      if ('removeEventListener' in mq) {
+        mq.removeEventListener('change', mqHandler as EventListener);
+      } else {
+        // Safari fallback
+        // @ts-expect-error legacy API
         mq.removeListener(mqHandler);
       }
       window.removeEventListener('theme-changed', customHandler as EventListener);

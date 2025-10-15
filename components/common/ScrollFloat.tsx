@@ -73,7 +73,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
     const anns: Ann[] = (annotations || []).filter(a => a && a.phrase && text.includes(a.phrase)) as Ann[];
     const starts: Record<number, Ann[]> = {};
     const ends: Record<number, Ann[]> = {};
-    anns.forEach((cfg, idx) => {
+  anns.forEach((cfg) => {
       const startIdx = text.indexOf(cfg.phrase);
       if (startIdx >= 0) {
         const endIdx = startIdx + cfg.phrase.length;
@@ -136,13 +136,13 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
             const annEl = (
               <RoughNotation
                 key={`${top.key}-${themeVersion}`}
-                type={(top.cfg.action ?? 'highlight') as any}
-                color={color as any}
-                strokeWidth={top.cfg.strokeWidth as any}
-                animationDuration={(top.cfg.animationDuration ?? 600) as any}
-                iterations={top.cfg.iterations as any}
-                padding={top.cfg.padding as any}
-                multiline={(top.cfg.multiline ?? true) as any}
+                type={(top.cfg.action ?? 'highlight') as 'highlight' | 'underline' | 'box' | 'circle' | 'strike-through' | 'crossed-off' | 'bracket'}
+                color={color}
+                strokeWidth={top.cfg.strokeWidth}
+                animationDuration={top.cfg.animationDuration ?? 600}
+                iterations={top.cfg.iterations}
+                padding={top.cfg.padding}
+                multiline={top.cfg.multiline ?? true}
                 show={highlightActive}
                 // include themeVersion to force re-render on theme change
                 data-theme-version={themeVersion}
@@ -240,7 +240,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
         }
       }
     );
-  }, [children, scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger, scrub, onAnimationComplete, onReset, onFirstSegmentComplete, onLeaveBack]);
+  }, [children, scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger, scrub, onAnimationComplete, onReset, onFirstSegmentComplete, onLeaveBack, onFirstSegmentDeactivate]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;

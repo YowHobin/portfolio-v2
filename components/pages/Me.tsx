@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Reveal from "../ui/Reveal";
@@ -84,7 +85,7 @@ export default function Me() {
       });
     });
 
-    if (imageRef.current && !imageRef.current.complete) {
+    if (imageRef.current && !(imageRef.current as HTMLImageElement).complete) {
       const onLoad = () => ScrollTrigger.refresh();
       imageRef.current.addEventListener("load", onLoad, { once: true } as AddEventListenerOptions);
     }
@@ -100,12 +101,17 @@ export default function Me() {
         <div className="grid xl:grid-cols-2 gap-8 xl:gap-0 items-center w-full">
           <Reveal>
             <div className="relative">
-              <div className="rounded-2xl overflow-hidden">
-                <img
-                  ref={imageRef}
+              <div className="relative rounded-2xl overflow-hidden w-full sm:h-[120vh] h-[60vh]">
+                <Image
                   src="/images/1000231009.jpg"
                   alt="Profile picture"
-                  className="w-full sm:h-[120vh] object-cover object-[15%_35%] rounded-lg"
+                  fill
+                  priority={false}
+                  sizes="(min-width: 1280px) 50vw, 100vw"
+                  className="object-cover object-[15%_35%] rounded-lg"
+                  onLoad={() => {
+                    try { ScrollTrigger.refresh(); } catch {}
+                  }}
                 />
               </div>
             </div>

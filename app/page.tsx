@@ -1,10 +1,7 @@
 import Hero from "@/components/pages/Hero";
-import About from "@/components/pages/About";
 import Bridge from "@/components/common/Bridge";
 import Me from "@/components/pages/Me";
 import Stacks from "@/components/pages/Stacks";
-import Projects from "@/components/pages/Projects";
-import Contact from "@/components/pages/Contact";
 
 export default function Home() {
   return (

@@ -1,3 +1,5 @@
+/*
+export {}
 "use client"
 
 import { useEffect, useRef } from "react"
@@ -86,41 +88,7 @@ export function Highlighter({
         const next = sib.nextSibling as (Element | null)
         ;(sib.parentNode as Node | null)?.removeChild(sib)
         sib = next
-        guard++
-      }
-    }
-
-    const isDark = resolveDarkMode()
-    const cssVar = (name: string, fallback: string) => {
-      try {
-        const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-        return v || fallback
-      } catch { return fallback }
-    }
-    const resolveColorInput = (val: string | undefined, fallback: string) => {
-      if (!val) return fallback
-      const trimmed = val.trim()
-      if (trimmed.startsWith('var(')) {
-        const m = trimmed.match(/var\((--[a-zA-Z0-9-_]+)\)/)
-        if (m && m[1]) {
-          return cssVar(m[1], fallback)
-        }
-      }
-      return trimmed
-    }
-    const mapLightByAction = () => {
-      if (colorLight) return resolveColorInput(colorLight, '#476EAE')
-      if (action === 'highlight') return cssVar('--brand-primary', '#476EAE')
-      if (action === 'underline') return cssVar('--brand-tertiary', '#A7E399')
-      return resolveColorInput(color, '#ffd1dc')
-    }
-    const defaultLight = mapLightByAction()
-    const defaultDark = colorDark ?? (action === "highlight" ? "#fde68a" : "#f59e0b")
-    const actualColor = isDark ? resolveColorInput(colorDark, defaultDark) : defaultLight
-
-    const annotationConfig = {
-      type: action,
-      color: actualColor,
+        export {}
       strokeWidth,
       animationDuration,
       iterations,
@@ -325,3 +293,6 @@ export function Highlighter({
     </span>
   )
 }
+
+*/
+export {}
