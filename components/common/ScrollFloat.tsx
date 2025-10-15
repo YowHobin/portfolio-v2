@@ -135,7 +135,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
             })();
             const annEl = (
               <RoughNotation
-                key={top.key}
+                key={`${top.key}-${themeVersion}`}
                 type={(top.cfg.action ?? 'highlight') as any}
                 color={color as any}
                 strokeWidth={top.cfg.strokeWidth as any}
@@ -158,7 +158,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
       }
     }
     return root;
-  }, [children, secondLineIndentClassName, annotations, highlightActive]);
+  }, [children, secondLineIndentClassName, annotations, highlightActive, themeVersion]);
 
   useEffect(() => {
     const el = containerRef.current;

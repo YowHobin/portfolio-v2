@@ -181,7 +181,7 @@ export default function Bridge({ id, className = "", height, fullHeight = true, 
               })();
               return (
                 <RoughNotation
-                  key={`${key}-hl`}
+                  key={`${key}-hl-${themeVersion}`}
                   type={(item.highlighter.action ?? "highlight") as any}
                   color={color as any}
                   strokeWidth={item.highlighter.strokeWidth as any}
