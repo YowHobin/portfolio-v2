@@ -27,7 +27,7 @@ export default function ThemeToggle() {
       gsap.set(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0 });
     } else {
       document.documentElement.classList.remove("dark");
-      document.documentElement.removeAttribute("data-theme");
+      document.documentElement.setAttribute("data-theme", THEME_LIGHT);
       gsap.set(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0 });
       gsap.set(sunRef.current, { x: 0, y: 0, opacity: 1, scale: 1 });
     }
@@ -51,10 +51,13 @@ export default function ThemeToggle() {
         .fromTo(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3 }, 0.05);
     } else {
       document.documentElement.classList.remove("dark");
-      document.documentElement.removeAttribute("data-theme");
+      document.documentElement.setAttribute("data-theme", THEME_LIGHT);
       tl.to(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0, duration: 0.3 }, 0)
         .fromTo(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3 }, 0.05);
     }
+    try {
+      window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: next } }));
+    } catch {}
   };
 
   return (

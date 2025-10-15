@@ -44,43 +44,6 @@ export default function Home() {
           },
         ]}
       />
-      <About />
-      <Bridge
-        id="bridge2"
-        height={{ base: 10, md: 30 }}
-        className="mx-auto max-w-6xl px-4 py-6"
-        items={[
-          {
-            text: "curious aren't we?",
-            variant: "float",
-            containerClassName:
-              "w-full flex justify-center sm:justify-start px-2",
-            textClassName:
-              "text-3xl md:text-5xl font-bold tracking-tight break-words",
-            scroll: {
-              start: "top bottom",
-              end: "center center",
-              stagger: 0.05,
-              scrub: 1.2,
-              duration: 1,
-            },
-          },
-          {
-            text: "here is a little something!",
-            variant: "float",
-            containerClassName: "w-full flex justify-center  mt-2",
-            textClassName:
-              "text-3xl md:text-5xl font-bold tracking-tight break-words text-foreground",
-            scroll: {
-              start: "center center",
-              end: "bottom bottom",
-              stagger: 0.05,
-              scrub: 3.2,
-              duration: 1,
-            },
-          },
-        ]}
-      />
       <Me />
       <Bridge
         id="bridge3"
@@ -90,8 +53,7 @@ export default function Home() {
           {
             text: "Come on! Don't bore us now. Take me to the good stuff.",
             variant: "float",
-            containerClassName:
-              "w-full text-center px-2",
+            containerClassName: "w-full text-center px-2",
             textClassName:
               "text-3xl md:text-5xl font-bold tracking-tight break-words",
             scroll: {
@@ -106,8 +68,8 @@ export default function Home() {
               {
                 phrase: "Don't bore us",
                 action: "highlight",
-                colorLight: "#fde68a",
-                colorDark: "#4c1d95",
+                colorLight: "var(--brand-primary)",
+                colorDark: "#fde68a",
                 strokeWidth: 2,
                 animationDuration: 600,
                 padding: 2,
@@ -116,7 +78,7 @@ export default function Home() {
               {
                 phrase: "good stuff",
                 action: "underline",
-                colorLight: "#f59e0b",
+                colorLight: "var(--brand-tertiary)",
                 colorDark: "#fbbf24",
                 strokeWidth: 2.5,
                 animationDuration: 600,
@@ -124,7 +86,7 @@ export default function Home() {
                 multiline: false,
               },
             ],
-          }
+          },
         ]}
       />
       <Stacks />

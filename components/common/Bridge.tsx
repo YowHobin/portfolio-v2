@@ -4,7 +4,8 @@ import Reveal from "../ui/Reveal";
 import ScrollFloat from "./ScrollFloat";
 import { createElement, useId, useMemo, useState } from "react";
 import type { CSSProperties, ElementType } from "react";
-import { Highlighter } from "../ui/highlighter";
+import { RoughNotation } from "react-rough-notation";
+import { useThemeVersion } from "@/lib/useThemeVersion";
 
 type TagName = ElementType;
 
@@ -71,6 +72,7 @@ type BridgeProps = {
 export default function Bridge({ id, className = "", height, fullHeight = true, items }: BridgeProps) {
   const autoId = useId();
   const sectionId = id ?? `bridge-${autoId}`;
+  const themeVersion = useThemeVersion();
   const getTag = (as?: TagName): ElementType => (as ?? ("h2" as ElementType));
 
   const initialHighlightState = useMemo(() => {
@@ -165,23 +167,33 @@ export default function Bridge({ id, className = "", height, fullHeight = true, 
             );
 
             if (item.highlighter?.enabled) {
+              const color = (() => {
+                const root = typeof document !== 'undefined' ? document.documentElement : null;
+                const isDark = !!root && (root.classList.contains('dark') || root.getAttribute('data-theme') === 'dark');
+                const action = (item.highlighter?.action ?? 'highlight');
+                if (isDark) {
+                  if (action === 'underline') return '#a3dd95';
+                  return '#476eae';
+                }
+                // light
+                if (action === 'highlight') return '#fde68a';
+                return (item.highlighter?.colorLight ?? item.highlighter?.color ?? '#476eae');
+              })();
               return (
-                <Highlighter
+                <RoughNotation
                   key={`${key}-hl`}
-                  action={item.highlighter.action ?? "highlight"}
-                  color={item.highlighter.color}
-                  colorLight={item.highlighter.colorLight}
-                  colorDark={item.highlighter.colorDark}
-                  strokeWidth={item.highlighter.strokeWidth}
-                  animationDuration={item.highlighter.animationDuration}
-                  iterations={item.highlighter.iterations}
-                  padding={item.highlighter.padding}
-                  multiline={item.highlighter.multiline ?? true}
-                  isView={false}
-                  active={!!highlightActive[key]}
+                  type={(item.highlighter.action ?? "highlight") as any}
+                  color={color as any}
+                  strokeWidth={item.highlighter.strokeWidth as any}
+                  animationDuration={(item.highlighter.animationDuration ?? 600) as any}
+                  iterations={item.highlighter.iterations as any}
+                  padding={item.highlighter.padding as any}
+                  multiline={(item.highlighter.multiline ?? true) as any}
+                  show={!!highlightActive[key]}
+                  data-theme-version={themeVersion}
                 >
                   {floatEl}
-                </Highlighter>
+                </RoughNotation>
               );
             }
 
