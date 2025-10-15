@@ -8,6 +8,8 @@ import SidebarNav from "@/components/common/SidebarNav";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import ClickSpark from "@/components/common/ClickSpark";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -80,6 +82,8 @@ export default async function RootLayout({
             </div>
           </footer>
         </ClickSpark>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
