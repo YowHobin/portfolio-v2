@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LogoLoop from "../ui/LogoLoop";
@@ -47,58 +47,64 @@ const STACKS = [
 export default function Stacks() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
-  const [isRevealed, setIsRevealed] = useState(false);
-  const lastScrollY = useRef(0);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
     const root = rootRef.current;
-    const content = contentRef.current;
-    if (!root || !content) return;
+    if (!root) return;
 
     const ctx = gsap.context(() => {
-      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (prefersReduced) {
-        setIsRevealed(true);
-        return;
-      }
+      const cards = gsap.utils.toArray<HTMLElement>(".stack-card");
+      
+      // Ensure initial state is hidden
+      gsap.set(cards, { opacity: 0, y: 50 });
 
-      // Horizontal reveal animation based on scroll direction
-      ScrollTrigger.create({
-        trigger: root,
-        start: "top 80%",
+      ScrollTrigger.batch(cards, {
+        start: "top 55%",
         end: "bottom 20%",
-        onEnter: () => {
-          setScrollDirection("down");
-          setIsRevealed(true);
+        onEnter: (batch) => {
+          gsap.to(batch, {
+            opacity: 1,
+            y: 0,
+            stagger: 0.3,
+            duration: 0.6,
+            ease: "power2.out",
+            overwrite: true,
+          });
         },
-        onLeave: () => {
-          setIsRevealed(false);
+        onLeave: (batch) => {
+          gsap.to(batch, {
+            opacity: 0,
+            y: -30,
+            duration: 0.4,
+            stagger: 0.15,
+            ease: "power2.in",
+            overwrite: true,
+          });
         },
-        onEnterBack: () => {
-          setScrollDirection("up");
-          setIsRevealed(true);
+        onEnterBack: (batch) => {
+          gsap.set(batch, { y: -50, opacity: 0 });
+          gsap.to(batch, {
+            opacity: 1,
+            y: 0,
+            stagger: -0.3,
+            duration: 0.6,
+            ease: "power2.out",
+            overwrite: true,
+          });
         },
-        onLeaveBack: () => {
-          setIsRevealed(false);
+        onLeaveBack: (batch) => {
+          gsap.to(batch, {
+            opacity: 0,
+            y: 30,
+            duration: 0.4,
+            stagger: -0.15,
+            ease: "power2.in",
+            overwrite: true,
+          });
         },
       });
-
-      // Track scroll direction
-      const handleScroll = () => {
-        const currentScrollY = window.scrollY;
-        if (currentScrollY > lastScrollY.current) {
-          setScrollDirection("down");
-        } else {
-          setScrollDirection("up");
-        }
-        lastScrollY.current = currentScrollY;
-      };
-
-      window.addEventListener("scroll", handleScroll, { passive: true });
-      return () => window.removeEventListener("scroll", handleScroll);
     }, root);
 
     return () => ctx.revert();
@@ -119,19 +125,7 @@ export default function Stacks() {
         {/* Main Content with horizontal reveal */}
         <div
           ref={contentRef}
-          className={`py-16 px-4 transition-all duration-700 ease-out ${
-            isRevealed
-              ? "opacity-100"
-              : "opacity-0"
-          }`}
-          style={{
-            clipPath: isRevealed
-              ? "inset(0 0 0 0)"
-              : scrollDirection === "down"
-              ? "inset(0 100% 0 0)"
-              : "inset(0 0 0 100%)",
-            transition: "clip-path 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease",
-          }}
+          className="py-16 px-4"
         >
           <div className="mx-auto max-w-6xl">
             <div className="text-center mb-12">
@@ -143,13 +137,10 @@ export default function Stacks() {
 
             {/* Stack Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {STACKS.map((stack, index) => (
+              {STACKS.map((stack) => (
                 <div
                   key={stack.title}
-                  className="stack-card glass border border-black/10 dark:border-white/10 rounded-2xl p-6 transition-all duration-500 hover:scale-[1.02] hover:shadow-lg"
-                  style={{
-                    transitionDelay: `${index * 100}ms`,
-                  }}
+                  className="stack-card glass border border-black/10 dark:border-white/10 rounded-2xl p-6 transition-all duration-500 hover:scale-[1.02] hover:shadow-lg opacity-0"
                 >
                   <h3 className="text-lg font-semibold mb-4">{stack.title}</h3>
                   <ul className="flex flex-wrap gap-2">
