@@ -423,3 +423,63 @@ header.header-hidden {
     @apply bg-background text-foreground;
   }
 }
+
+/* Logo Loop Marquee Animations */
+.logo-loop-container {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-loop-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+@keyframes marquee-left {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-33.3333%);
+  }
+}
+
+@keyframes marquee-right {
+  from {
+    transform: translateX(-33.3333%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+.logo-item {
+  transition: transform 0.3s ease;
+}
+
+.logo-item:hover {
+  transform: scale(1.1);
+}
+
+/* Stacks section full-width */
+.stacks-full-width {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  position: relative;
+}
+
+/* Horizontal reveal animation for stacks content */
+.stacks-content-reveal {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stacks-content-reveal.revealed {
+  clip-path: inset(0 0 0 0);
+}
+
+.stacks-content-reveal.reverse {
+  clip-path: inset(0 0 0 100%);
+}
