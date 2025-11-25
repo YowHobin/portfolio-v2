@@ -437,24 +437,6 @@ header.header-hidden {
   will-change: transform;
 }
 
-@keyframes marquee-left {
-  from {
-    transform: translateX(0%);
-  }
-  to {
-    transform: translateX(-33.3333%);
-  }
-}
-
-@keyframes marquee-right {
-  from {
-    transform: translateX(-33.3333%);
-  }
-  to {
-    transform: translateX(0%);
-  }
-}
-
 .logo-item {
   transition: transform 0.3s ease;
 }

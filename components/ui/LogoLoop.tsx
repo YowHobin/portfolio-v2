@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
 
 interface LogoItem {
   name: string;
@@ -16,7 +17,7 @@ interface LogoLoopProps {
 // Tech icons component using devicon CDN
 const TechIcon = ({ name }: { name: string }) => {
   const iconMap: Record<string, string> = {
-    PHP: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-plain.svg",
+    PHP: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg",
     JS: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
     TS: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
     Python: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
@@ -55,78 +56,99 @@ export default function LogoLoop({
   className = "",
 }: LogoLoopProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [scrollSpeed, setScrollSpeed] = useState(1);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const tweenRef = useRef<gsap.core.Tween | null>(null);
   const lastScrollY = useRef(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Handle scroll speed changes
   useEffect(() => {
-    let ticking = false;
+    const track = trackRef.current;
+    if (!track) return;
+
+    const ctx = gsap.context(() => {
+      // Set initial position based on direction
+      const start = direction === "left" ? 0 : -33.3333;
+      const end = direction === "left" ? -33.3333 : 0;
+
+      // Ensure starting position
+      gsap.set(track, { xPercent: start });
+
+      // Create infinite looping animation
+      tweenRef.current = gsap.to(track, {
+        xPercent: end,
+        duration: baseSpeed,
+        ease: "none",
+        repeat: -1,
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [direction, baseSpeed]);
+
+  useEffect(() => {
     const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const currentScrollY = window.scrollY;
-          const delta = Math.abs(currentScrollY - lastScrollY.current);
-          const newSpeed = Math.min(Math.max(1 + delta * 0.005, 1), 1.5);
-          setScrollSpeed(newSpeed);
-          lastScrollY.current = currentScrollY;
-          ticking = false;
-        });
-        ticking = true;
+      if (!tweenRef.current) return;
+
+      const currentScrollY = window.scrollY;
+      const delta = Math.abs(currentScrollY - lastScrollY.current);
+      const newTimeScale = 1 + delta * 0.05; // Sensitivity factor
+
+      // Smoothly accelerate
+      gsap.to(tweenRef.current, {
+        timeScale: newTimeScale,
+        duration: 0.5,
+        overwrite: true,
+      });
+
+      lastScrollY.current = currentScrollY;
+
+      // Clear existing timeout to prevent early deceleration
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
+
+      // Decelerate back to normal speed when scrolling stops
+      timeoutRef.current = setTimeout(() => {
+        if (tweenRef.current) {
+          gsap.to(tweenRef.current, {
+            timeScale: 1,
+            duration: 0.5,
+            overwrite: true,
+          });
+        }
+      }, 100);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Decay scroll speed back to 1
-  useEffect(() => {
-    const decay = setInterval(() => {
-      setScrollSpeed((prev) => {
-        if (prev > 1.05) return prev * 0.95;
-        return 1;
-      });
-    }, 50);
-    return () => clearInterval(decay);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, []);
 
   // Duplicate items for seamless loop
   const duplicatedItems = [...items, ...items, ...items];
 
-  const animationDuration = baseSpeed / scrollSpeed;
-
   return (
     <div
       ref={containerRef}
       className={`logo-loop-container overflow-hidden pb-10 ${className}`}
+      onMouseEnter={() => tweenRef.current?.pause()}
+      onMouseLeave={() => tweenRef.current?.play()}
     >
       <div
+        ref={trackRef}
         className="logo-loop-track flex items-center gap-6 md:gap-8"
-        style={{
-          animationName: `marquee-${direction}`,
-          animationDuration: `${animationDuration}s`,
-          animationTimingFunction: "linear",
-          animationIterationCount: "infinite",
-        }}
       >
         {duplicatedItems.map((item, index) => (
           <div
             key={`${item.name}-${index}`}
             className="logo-item group relative flex-shrink-0 cursor-pointer"
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
           >
             <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-lg transition-all duration-300 hover:scale-110">
               <TechIcon name={item.name} />
             </div>
-            <div
-              className={`absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm font-medium text-foreground/80 transition-all duration-300 ${
-                hoveredIndex === index
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-2"
-              }`}
-            >
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-sm font-medium text-foreground/80 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
               {item.name}
             </div>
           </div>

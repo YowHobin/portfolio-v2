@@ -109,11 +109,11 @@ export default function Stacks() {
       {/* Full-width container that breaks out of parent padding */}
       <div className="stacks-full-width">
         {/* Top Logo Loops */}
-        <div className="pt-4 border-t border-black/10 dark:border-white/10">
-          <LogoLoop items={LAYER_ONE} direction="left" baseSpeed={60} />
+        <div className="pt-4 ">
+          <LogoLoop items={LAYER_ONE} direction="left" baseSpeed={25} />
         </div>
-        <div className="border-b border-black/10 dark:border-white/10">
-          <LogoLoop items={LAYER_TWO} direction="right" baseSpeed={55} />
+        <div className="">
+          <LogoLoop items={LAYER_TWO} direction="right" baseSpeed={20} />
         </div>
 
         {/* Main Content with horizontal reveal */}
@@ -169,11 +169,11 @@ export default function Stacks() {
         </div>
 
         {/* Bottom Logo Loops */}
-        <div className="pt-4 border-t border-black/10 dark:border-white/10">
-          <LogoLoop items={LAYER_TWO} direction="left" baseSpeed={55} />
+        <div className="pt-4">
+          <LogoLoop items={LAYER_TWO} direction="left" baseSpeed={20} />
         </div>
-        <div className="border-b border-black/10 dark:border-white/10">
-          <LogoLoop items={LAYER_ONE} direction="right" baseSpeed={60} />
+        <div className="">
+          <LogoLoop items={LAYER_ONE} direction="right" baseSpeed={25} />
         </div>
       </div>
     </section>
