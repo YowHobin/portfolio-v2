@@ -7,12 +7,17 @@ interface LogoItem {
   name: string;
 }
 
+type LoopDirection = "left" | "right" | "up" | "down";
+
 interface LogoLoopProps {
   items: LogoItem[];
-  direction?: "left" | "right";
+  direction?: LoopDirection;
   baseSpeed?: number;
   className?: string;
+  orientation?: "horizontal" | "vertical";
 }
+
+const LOOP_OFFSET = 33.3333;
 
 // Tech icons component using devicon CDN
 const TechIcon = ({ name }: { name: string }) => {
@@ -54,36 +59,39 @@ export default function LogoLoop({
   direction = "left",
   baseSpeed = 50,
   className = "",
+  orientation = "horizontal",
 }: LogoLoopProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const tweenRef = useRef<gsap.core.Tween | null>(null);
   const lastScrollY = useRef(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isVertical = orientation === "vertical";
 
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
 
     const ctx = gsap.context(() => {
-      // Set initial position based on direction
-      const start = direction === "left" ? 0 : -33.3333;
-      const end = direction === "left" ? -33.3333 : 0;
+      const forwardDirections = isVertical
+        ? direction === "up"
+        : direction === "left";
+      const axisProp = isVertical ? "yPercent" : "xPercent";
+      const start = forwardDirections ? 0 : -LOOP_OFFSET;
+      const delta = forwardDirections ? `-=${LOOP_OFFSET}` : `+=${LOOP_OFFSET}`;
 
-      // Ensure starting position
-      gsap.set(track, { xPercent: start });
+      gsap.set(track, { [axisProp]: start });
 
-      // Create infinite looping animation
       tweenRef.current = gsap.to(track, {
-        xPercent: end,
         duration: baseSpeed,
         ease: "none",
         repeat: -1,
+        [axisProp]: delta,
       });
     }, containerRef);
 
     return () => ctx.revert();
-  }, [direction, baseSpeed]);
+  }, [direction, baseSpeed, isVertical]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -127,18 +135,24 @@ export default function LogoLoop({
   }, []);
 
   // Duplicate items for seamless loop
-  const duplicatedItems = [...items, ...items, ...items];
+  const duplicatedItems = Array.from({ length: 6 }, () => items).flat();
+
+  const containerClasses = isVertical
+    ? "h-full overflow-visible"
+    : "pb-10 overflow-hidden";
 
   return (
     <div
       ref={containerRef}
-      className={`logo-loop-container overflow-hidden pb-10 ${className}`}
+      className={`logo-loop-container ${containerClasses} ${className}`.trim()}
       onMouseEnter={() => tweenRef.current?.pause()}
       onMouseLeave={() => tweenRef.current?.play()}
     >
       <div
         ref={trackRef}
-        className="logo-loop-track flex items-center gap-6 md:gap-8"
+        className={`logo-loop-track flex gap-6 md:gap-8 ${
+          isVertical ? "flex-col items-center" : "flex-row items-center"
+        } ${isVertical ? "min-h-[350%]" : ""}`.trim()}
       >
         {duplicatedItems.map((item, index) => (
           <div

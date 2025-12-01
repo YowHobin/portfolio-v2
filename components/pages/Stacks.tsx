@@ -11,7 +11,7 @@ const LAYER_ONE = [
   { name: "JS" },
   { name: "TS" },
   { name: "Python" },
-  { name: "MS SQL Server" },
+  { name: "MS SQL" },
   { name: "MongoDB" },
   { name: "MySQL" },
   { name: "Tailwind" },
@@ -113,19 +113,33 @@ export default function Stacks() {
   return (
     <section id="stacks" className="relative py-16" ref={rootRef}>
       {/* Full-width container that breaks out of parent padding */}
-      <div className="stacks-full-width">
-        {/* Top Logo Loops */}
-        <div className="pt-4 ">
-          <LogoLoop items={LAYER_ONE} direction="left" baseSpeed={25} />
+      <div className="stacks-full-width relative min-h-[600px] px-6 sm:px-10 lg:px-20">
+        {/* Vertical corner Logo Loops */}
+        <div className="pointer-events-auto absolute inset-y-0 left-0 z-20 flex justify-center px-2 sm:px-20">
+          <LogoLoop
+            items={LAYER_ONE}
+            direction="up"
+            baseSpeed={28}
+            orientation="vertical"
+            className="hidden sm:flex h-full w-16 sm:w-20 lg:w-28 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-xl"
+          />
         </div>
-        <div className="">
-          <LogoLoop items={LAYER_TWO} direction="right" baseSpeed={20} />
+        <div className="pointer-events-auto absolute inset-y-0 right-0 z-20 flex justify-center px-2 sm:px-20">
+          <LogoLoop
+            items={LAYER_TWO}
+            direction="down"
+            baseSpeed={28}
+            orientation="vertical"
+            className="hidden sm:flex h-full w-16 sm:w-20 lg:w-28 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-xl"
+          />
         </div>
 
-        {/* Main Content with horizontal reveal */}
+        <div className="absolute inset-0 z-10" aria-hidden />
+
+        {/* Main Content */}
         <div
           ref={contentRef}
-          className="py-16 px-4"
+          className="relative z-10 py-16 px-6 sm:px-12 lg:px-24"
         >
           <div className="mx-auto max-w-6xl">
             <div className="text-center mb-12">
@@ -157,14 +171,6 @@ export default function Stacks() {
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Bottom Logo Loops */}
-        <div className="pt-4">
-          <LogoLoop items={LAYER_TWO} direction="left" baseSpeed={20} />
-        </div>
-        <div className="">
-          <LogoLoop items={LAYER_ONE} direction="right" baseSpeed={25} />
         </div>
       </div>
     </section>
