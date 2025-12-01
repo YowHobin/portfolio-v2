@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
@@ -43,9 +44,11 @@ const TechIcon = ({ name }: { name: string }) => {
   const iconUrl = iconMap[name];
   
   return iconUrl ? (
-    <img 
-      src={iconUrl} 
-      alt={name} 
+    <Image
+      src={iconUrl}
+      alt={name}
+      width={40}
+      height={40}
       className="w-8 h-8 md:w-10 md:h-10 grayscale group-hover:grayscale-0 transition-all duration-300"
       loading="lazy"
     />
