@@ -25,7 +25,7 @@ export default function SidebarNav() {
   useEffect(() => {
     const build = () => {
       const sections = Array.from(document.querySelectorAll<HTMLElement>("section[id]"))
-        .filter((el) => el.id && el.id.toLowerCase() !== "bridge");
+        .filter((el) => el.id && !el.id.toLowerCase().startsWith("bridge"));
       const nav: NavItem[] = sections.map((el) => ({ id: el.id, href: `#${el.id}`, label: toLabel(el.id, el) }));
       setItems(nav);
       if (nav.length > 0 && !nav.some((n) => n.id === activeId)) setActiveId(nav[0].id);
