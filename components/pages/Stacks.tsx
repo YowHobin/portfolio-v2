@@ -158,14 +158,14 @@ export default function Stacks() {
           <div className="mx-auto max-w-5xl">
             <div className="text-center space-y-3">
               <p className="text-[0.65rem] uppercase tracking-[0.5em] text-foreground/35">
-                Studio stack roster
+                Tools I actually enjoy using
               </p>
               <h2 className="text-4xl sm:text-5xl font-semibold tracking-tight">
-                Three signals. One signature voice.
+                The stack behind the work.
               </h2>
               <p className="text-base text-foreground/60">
-                Think of it as a private label kit—per project, I dial each layer up or down
-                without ever losing the brand texture.
+                These are the languages, frameworks, and services I reach for most often—from first idea to
+                production deploy. Different projects need different tools, but this stack feels like home.
               </p>
             </div>
 
