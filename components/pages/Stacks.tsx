@@ -176,7 +176,7 @@ export default function Stacks() {
               <div className="flex flex-col gap-12">
                 {STACKS.map((stack, index) => (
                   <div key={stack.title} className="group relative pl-0 sm:pl-16">
-                    <div className="absolute left-4 top-0 hidden sm:flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full border border-foreground/20 bg-background text-xs uppercase tracking-[0.35em] text-foreground/50">
+                    <div className="absolute left-4 top-0 hidden sm:flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full border border-foreground/20 bg-background text-xs font-mono tracking-[0.15em] text-foreground/50">
                       0{index + 1}
                     </div>
                     <article className="stack-card rounded-[32px] border border-foreground/12 bg-background/75 p-6 sm:p-8 backdrop-blur-md transition-colors duration-500 hover:border-foreground/35">
