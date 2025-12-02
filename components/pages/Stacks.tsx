@@ -129,22 +129,22 @@ export default function Stacks() {
       {/* Full-width container that breaks out of parent padding */}
       <div className="stacks-full-width relative min-h-[600px] px-6 sm:px-10 lg:px-20">
         {/* Vertical corner Logo Loops */}
-        <div className="pointer-events-auto absolute inset-y-0 left-0 z-20 flex justify-center px-2 lg:px-20">
+        <div className="pointer-events-auto absolute inset-y-0 left-0 z-20 flex justify-center px-3 lg:px-24">
           <LogoLoop
             items={LAYER_ONE}
             direction="up"
             baseSpeed={28}
             orientation="vertical"
-            className="hidden sm:flex h-full w-16 sm:w-20 lg:w-28 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-xl"
+            className="hidden sm:flex h-full w-20 sm:w-24 lg:w-32 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-xl"
           />
         </div>
-        <div className="pointer-events-auto absolute inset-y-0 right-0 z-20 flex justify-center px-2 lg:px-20">
+        <div className="pointer-events-auto absolute inset-y-0 right-0 z-20 flex justify-center px-3 lg:px-24">
           <LogoLoop
             items={LAYER_TWO}
             direction="down"
             baseSpeed={28}
             orientation="vertical"
-            className="hidden sm:flex h-full w-16 sm:w-20 lg:w-28 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-xl"
+            className="hidden sm:flex h-full w-20 sm:w-24 lg:w-32 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-xl"
           />
         </div>
 
