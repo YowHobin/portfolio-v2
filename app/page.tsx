@@ -168,6 +168,7 @@ export default function Home() {
           },
         ]}
       />
+      <Projects />
       {/* <Stacks />
       <Projects />
       <Contact /> */}
