@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import gsap from "gsap";
 
 const STORAGE_KEY = "theme" as const;
@@ -11,7 +12,7 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState<string | null>(null);
   const sunRef = useRef<SVGSVGElement>(null);
   const moonRef = useRef<SVGSVGElement>(null);
-  const rippleRef = useRef<HTMLSpanElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -33,40 +34,113 @@ export default function ThemeToggle() {
     }
   }, []);
 
-  const toggle = () => {
+  const toggle = async () => {
     const next = theme === THEME_DARK ? THEME_LIGHT : THEME_DARK;
+    
+    // Check if View Transitions API is supported
+    if (!document.startViewTransition) {
+      updateTheme(next);
+      return;
+    }
+
+    // Disable transitions to prevent lag
+    document.documentElement.classList.add("disable-transitions");
+
+    const transition = document.startViewTransition(() => {
+      flushSync(() => {
+        updateTheme(next, false, false); // Don't animate, don't dispatch event yet
+      });
+    });
+
+    try {
+      await transition.ready;
+
+      if (!buttonRef.current) return;
+      const rect = buttonRef.current.getBoundingClientRect();
+      const right = window.innerWidth - rect.left;
+      const bottom = window.innerHeight - rect.top;
+      const maxRadius = Math.hypot(
+        Math.max(rect.left, right),
+        Math.max(rect.top, bottom)
+      );
+
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${x}px ${y}px)`,
+            `circle(${maxRadius}px at ${x}px ${y}px)`,
+          ],
+        },
+        {
+          duration: 500,
+          easing: "ease-in-out",
+          pseudoElement: "::view-transition-new(root)",
+        }
+      );
+    } catch (e) {
+      console.error("View transition failed", e);
+    } finally {
+      // Re-enable transitions and dispatch event after animation
+      transition.finished.then(() => {
+        document.documentElement.classList.remove("disable-transitions");
+        // Dispatch event now that transition is done to update complex components like RoughNotation
+        try {
+          window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: next } }));
+        } catch {}
+      });
+    }
+  };
+
+  const updateTheme = (next: string, shouldAnimate: boolean = true, shouldDispatch: boolean = true) => {
     setTheme(next);
     window.localStorage.setItem(STORAGE_KEY, next);
     document.cookie = `theme=${encodeURIComponent(next)}; Max-Age=31536000; Path=/; SameSite=Lax`;
-    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-    const ripple = rippleRef.current;
-    if (ripple) {
-      gsap.set(ripple, { scale: 0, opacity: 0.35, x: 0, y: 0 });
-      tl.to(ripple, { scale: 12, opacity: 0, duration: 0.6 }, 0);
-    }
-    if (next === THEME_DARK) {
-      document.documentElement.classList.add("dark");
-      document.documentElement.setAttribute("data-theme", THEME_DARK);
-      tl.to(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0, duration: 0.3 }, 0)
-        .fromTo(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3 }, 0.05);
+    
+    if (shouldAnimate) {
+      const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+      if (next === THEME_DARK) {
+        document.documentElement.classList.add("dark");
+        document.documentElement.setAttribute("data-theme", THEME_DARK);
+        tl.to(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0, duration: 0.3 }, 0)
+          .fromTo(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3 }, 0.05);
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.setAttribute("data-theme", THEME_LIGHT);
+        tl.to(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0, duration: 0.3 }, 0)
+          .fromTo(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3 }, 0.05);
+      }
     } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.setAttribute("data-theme", THEME_LIGHT);
-      tl.to(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0, duration: 0.3 }, 0)
-        .fromTo(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0 }, { x: 0, y: 0, opacity: 1, scale: 1, duration: 0.3 }, 0.05);
+      // Instant update for View Transitions
+      if (next === THEME_DARK) {
+        document.documentElement.classList.add("dark");
+        document.documentElement.setAttribute("data-theme", THEME_DARK);
+        gsap.set(sunRef.current, { x: 10, y: -10, opacity: 0, scale: 0 });
+        gsap.set(moonRef.current, { x: 0, y: 0, opacity: 1, scale: 1 });
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.setAttribute("data-theme", THEME_LIGHT);
+        gsap.set(moonRef.current, { x: -10, y: 10, opacity: 0, scale: 0 });
+        gsap.set(sunRef.current, { x: 0, y: 0, opacity: 1, scale: 1 });
+      }
     }
-    try {
-      window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: next } }));
-    } catch {}
+    
+    if (shouldDispatch) {
+      try {
+        window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: next } }));
+      } catch {}
+    }
   };
 
   return (
     <button
+      ref={buttonRef}
       onClick={toggle}
       aria-label="Toggle theme"
       className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm border border-black/10 dark:border-white/10 hover-bg-muted transition-colors glass"
     >
-      <span className="absolute inset-0 rounded-full" ref={rippleRef} style={{ background: "radial-gradient(circle at bottom left, var(--accent), transparent 60%)", pointerEvents: "none" }} aria-hidden />
       <span className="relative inline-flex w-5 h-5 items-center justify-center">
         <svg
           ref={sunRef}

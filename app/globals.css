@@ -40,6 +40,17 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: #48B3AF;
+  --transition-duration: 300ms;
+}
+
+.disable-transitions {
+  --transition-duration: 0s !important;
+}
+
+* {
+  transition-property: background-color, color, border-color, fill, stroke;
+  transition-duration: var(--transition-duration);
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark, [data-theme="dark"] {
@@ -55,11 +66,6 @@
   --card-foreground: #e5e7eb;
 }
 
-* {
-  transition-property: background-color, color, border-color, fill, stroke;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
 
 html, body {
   height: 100%;
@@ -452,7 +458,14 @@ header.header-hidden {
   position: relative;
 }
 
-/* Horizontal reveal animation for stacks content */
+/* View Transition API overrides */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+
 .stacks-content-reveal {
   clip-path: inset(0 100% 0 0);
   transition: clip-path 0.8s cubic-bezier(0.4, 0, 0.2, 1);

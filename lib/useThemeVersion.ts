@@ -20,22 +20,10 @@ export function useThemeVersion(): number {
       mq.addListener(mqHandler);
     }
 
-    const root = document.documentElement;
-    const observer = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        if (m.attributeName === 'class' || m.attributeName === 'data-theme') {
-          bump();
-          break;
-        }
-      }
-    });
-    observer.observe(root, { attributes: true, attributeFilter: ['class', 'data-theme'] });
-
     const customHandler = () => bump();
     window.addEventListener('theme-changed', customHandler as EventListener);
 
     return () => {
-      observer.disconnect();
       if ('removeEventListener' in mq) {
         mq.removeEventListener('change', mqHandler as EventListener);
       } else {
