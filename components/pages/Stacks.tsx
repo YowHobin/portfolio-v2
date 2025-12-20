@@ -59,6 +59,7 @@ const STACKS = [
 export default function Stacks() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const headerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -68,6 +69,38 @@ export default function Stacks() {
 
     const ctx = gsap.context(() => {
       const cards = gsap.utils.toArray<HTMLElement>(".stack-card");
+      const header = headerRef.current;
+      
+      // Header animation setup
+      if (header) {
+        const headerElements = header.querySelectorAll('p, h2');
+        gsap.set(headerElements, { opacity: 0, y: 40, filter: "blur(8px)" });
+        
+        ScrollTrigger.create({
+          trigger: header,
+          start: "top 80%",
+          onEnter: () => {
+            gsap.to(headerElements, {
+              opacity: 1,
+              y: 0,
+              filter: "blur(0px)",
+              stagger: 0.2,
+              duration: 0.8,
+              ease: "power3.out"
+            });
+          },
+          onLeaveBack: () => {
+            gsap.to(headerElements, {
+              opacity: 0,
+              y: 40,
+              filter: "blur(8px)",
+              stagger: -0.1,
+              duration: 0.5,
+              ease: "power2.in"
+            });
+          }
+        });
+      }
       
       // Ensure initial state is hidden
       gsap.set(cards, { opacity: 0, y: 80, rotateX: -6, filter: "blur(12px)" });
@@ -162,7 +195,7 @@ export default function Stacks() {
           className="relative z-10 py-16 px-6 sm:px-12 lg:px-24"
         >
           <div className="mx-auto max-w-5xl">
-            <div className="text-center space-y-3">
+            <div className="text-center space-y-3" ref={headerRef}>
               <p className="text-[0.65rem] uppercase tracking-[0.5em] text-foreground/35">
                 Tools I actually enjoy using
               </p>
