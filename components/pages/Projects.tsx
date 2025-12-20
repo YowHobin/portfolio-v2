@@ -200,7 +200,7 @@ export default function Projects() {
         </Reveal>
 
         <div ref={articlesRef} className="mt-10 grid gap-6 md:grid-cols-2 items-stretch">
-          <div className="grid gap-6">
+          <div className="grid gap-6 md:row-span-2">
             <article className="glass rounded-[32px] border border-foreground/12 bg-background/80 p-6 sm:p-8 backdrop-blur-md flex flex-col justify-between">
               <div>
                 <p className="text-[0.65rem] uppercase tracking-[0.5em] text-foreground/45">
@@ -259,11 +259,11 @@ export default function Projects() {
                 </span>
               </div>
               <p className="max-w-md text-sm text-background/80">
-                Full-stack products taken from first commit to production:
-                architecture, implementation, testing, deployment, and the
-                unglamorous maintenance work that keeps everything stable.
-                These are the projects with real users, real constraints, and
-                long-term ownership—not just prototypes.
+                End-to-end full-stack products built from the very first commit through production, covering architecture, development, testing, deployment, and the less glamorous maintenance that keeps systems reliable. These are projects with real users, real constraints, and long term ownership, not just throwaway prototypes.
+              </p>
+              <p className="max-w-md text-sm text-background/80">
+              Security is integrated throughout the development process, with consistent attention to authentication, authorization, input validation, data protection, and dependency management, ensuring the product remains stable, secure, and reliable as it scales.
+
               </p>
             </div>
           </article>
