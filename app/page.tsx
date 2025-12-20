@@ -127,6 +127,7 @@ export default function Home() {
       />
       <Bridge
         id="bridge5"
+        height={{ base: 10, md: 15 }}
         className="mx-auto max-w-6xl px-4 py-3"
         items={[
           {
