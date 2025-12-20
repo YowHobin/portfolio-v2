@@ -11,7 +11,7 @@ interface CountUpProps {
   startWhen?: boolean;
   separator?: string;
   onStart?: () => void;
-  onEnd?: () => void;
+  onEnd?: (element?: HTMLElement | null) => void;
 }
 
 export default function CountUp({
@@ -28,6 +28,15 @@ export default function CountUp({
 }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const motionValue = useMotionValue(direction === 'down' ? to : from);
+
+  // Keep refs for callbacks to avoid restarting effect when props change
+  const onStartRef = useRef(onStart);
+  const onEndRef = useRef(onEnd);
+
+  useEffect(() => {
+    onStartRef.current = onStart;
+    onEndRef.current = onEnd;
+  }, [onStart, onEnd]);
 
   const damping = 20 + 40 * (1 / duration);
   const stiffness = 100 * (1 / duration);
@@ -78,11 +87,10 @@ export default function CountUp({
   useEffect(() => {
     let startTimeoutId: ReturnType<typeof setTimeout> | null = null;
     let randomIntervalId: ReturnType<typeof setInterval> | null = null;
-    let endTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
     if (isInView && startWhen) {
-      if (typeof onStart === 'function') {
-        onStart();
+      if (typeof onStartRef.current === 'function') {
+        onStartRef.current();
       }
 
       const startRandomization = () => {
@@ -102,6 +110,9 @@ export default function CountUp({
             }
 
             motionValue.set(direction === 'down' ? from : to);
+            if (typeof onEndRef.current === 'function') {
+              onEndRef.current(ref.current);
+            }
             return;
           }
 
@@ -112,15 +123,6 @@ export default function CountUp({
       };
 
       startTimeoutId = setTimeout(startRandomization, delay * 1000);
-
-      endTimeoutId = setTimeout(
-        () => {
-          if (typeof onEnd === 'function') {
-            onEnd();
-          }
-        },
-        delay * 1000 + duration * 1000
-      );
     }
 
     return () => {
@@ -130,11 +132,8 @@ export default function CountUp({
       if (randomIntervalId) {
         clearInterval(randomIntervalId);
       }
-      if (endTimeoutId) {
-        clearTimeout(endTimeoutId);
-      }
     };
-  }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration, formatValue]);
+  }, [isInView, startWhen, motionValue, direction, from, to, delay, duration, formatValue]);
 
   useEffect(() => {
     const unsubscribe = springValue.on('change', (latest: number) => {

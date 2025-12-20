@@ -1,16 +1,32 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Reveal from "../ui/Reveal";
 import CountUp from "../CountUp";
+import { Confetti, type ConfettiRef } from "../ui/confetti";
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
   const articlesRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
+  const confettiRef = useRef<ConfettiRef>(null);
+
+  const fireConfetti = useCallback((element?: HTMLElement | null, particleCount = 50, spread = 50) => {
+    if (!element || !confettiRef.current) return;
+    
+    const rect = element.getBoundingClientRect();
+    const x = (rect.left + rect.width / 2) / window.innerWidth;
+    const y = (rect.top + rect.height / 2) / window.innerHeight;
+    
+    confettiRef.current.fire({
+      particleCount,
+      spread,
+      origin: { x, y }
+    });
+  }, []);
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -209,7 +225,9 @@ export default function Projects() {
                 <div className="mt-4 flex items-baseline gap-2">
                   <CountUp
                     to={3}
+                    duration={2.5}
                     className="text-4xl sm:text-5xl font-semibold tracking-tight"
+                    onEnd={(el) => fireConfetti(el, 50, 50)}
                   />
                   <span className="text-sm text-foreground/60">shipped builds</span>
                 </div>
@@ -228,7 +246,9 @@ export default function Projects() {
                 <div className="mt-4 flex items-baseline gap-2">
                   <CountUp
                     to={1}
+                    duration={2.8}
                     className="text-4xl sm:text-5xl font-semibold tracking-tight"
+                    onEnd={(el) => fireConfetti(el, 40, 60)}
                   />
                   <span className="text-sm text-foreground/60">active build</span>
                 </div>
@@ -252,7 +272,9 @@ export default function Projects() {
               <div className="flex items-baseline gap-3">
                 <CountUp
                   to={7}
+                  duration={3.2}
                   className="text-5xl sm:text-6xl md:text-7xl font-semibold tracking-tight text-background"
+                  onEnd={(el) => fireConfetti(el, 100, 70)}
                 />
                 <span className="text-sm font-medium text-background/80">
                   end-to-end deliveries
@@ -269,7 +291,11 @@ export default function Projects() {
           </article>
         </div>
       </div>
-
+      <Confetti
+        ref={confettiRef}
+        className="absolute left-0 top-0 z-50 size-full pointer-events-none"
+        manualstart
+      />
     </section>
   );
 }
