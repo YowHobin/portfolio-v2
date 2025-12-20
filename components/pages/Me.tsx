@@ -96,8 +96,8 @@ export default function Me() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="me" className="relative min-h-screen py-19">
-      <div className="mx-auto max-w-7xl px-6 w-full h-full flex items-center justify-center">
+    <section ref={sectionRef} id="me" className="relative min-h-screen  sm:py-19">
+      <div className="mx-auto max-w-7xl px-6 w-full h-auto sm:h-full flex items-center justify-center">
         <div className="grid xl:grid-cols-2 gap-8 xl:gap-0 items-center w-full">
           <Reveal>
             <div className="relative">

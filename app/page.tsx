@@ -48,7 +48,7 @@ export default function Home() {
       <Bridge
         id="bridge3"
         height={{ base: 10, md: 30 }}
-        className="mx-auto max-w-6xl px-4 py-6"
+        className="mx-auto max-w-6xl px-4 pt-40 sm:py-6"
         items={[
           {
             text: "Come on! Don't bore us now. Take us to the good stuff!",
