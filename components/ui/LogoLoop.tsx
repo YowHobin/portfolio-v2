@@ -165,7 +165,7 @@ export default function LogoLoop({
             <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-lg transition-all duration-300 hover:scale-110">
               <TechIcon name={item.name} />
             </div>
-            <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 max-w-[7rem] px-2 text-[0.7rem] leading-tight text-center font-medium text-foreground/80 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 max-w-[7rem] px-2 text-[0.7rem] leading-tight text-center font-medium text-foreground/80 opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
               {item.name}
             </div>
           </div>
