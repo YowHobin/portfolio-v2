@@ -43,6 +43,12 @@ const STACKS = [
     note: "Scribbled on a whiteboard between deploy windows.",
   },
   {
+    title: "Design",
+    caption: "Visual systems that speak to users.",
+    items: ["Figma", "Adobe XD", "Sketch", "Photoshop"],
+    note: "Crafted with intention and iteration.",
+  },
+  {
     title: "Infra & Ops",
     caption: "Deployment, telemetry, and ritual QA.",
     items: ["Vercel", "Docker", "CI/CD", "IIS", "Jest", "PHPUnit"],

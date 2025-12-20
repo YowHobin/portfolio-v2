@@ -65,7 +65,6 @@ export default function Projects() {
     ScrollTrigger.create({
       trigger: titleContainer,
       onEnter: () => {
-        console.log("Title container entered - playing title animations");
         if (title) {
           gsap.to(title, {
             opacity: 1,
@@ -85,7 +84,6 @@ export default function Projects() {
         }
       },
       onLeave: () => {
-        console.log("Title container left - playing leave animations");
         if (title) {
           gsap.to(title, {
             opacity: 0.6,
@@ -104,7 +102,6 @@ export default function Projects() {
         }
       },
       onEnterBack: () => {
-        console.log("Title container entered back - playing title animations");
         if (title) {
           gsap.to(title, {
             opacity: 1,
@@ -124,7 +121,6 @@ export default function Projects() {
         }
       },
       onLeaveBack: () => {
-        console.log("Title container left back - reversing title animations");
         if (title) {
           gsap.to(title, {
             opacity: 0,
@@ -171,20 +167,16 @@ export default function Projects() {
       ScrollTrigger.create({
         trigger: article,
         onEnter: () => {
-          console.log(`Article ${index} entered - playing animation`);
           animation.play();
         },
         onLeave: () => {
-          console.log(`Article ${index} left - playing leave animation`);
           leaveAnimation.play();
         },
         onEnterBack: () => {
-          console.log(`Article ${index} entered back - reversing leave and playing enter`);
           leaveAnimation.reverse();
           animation.play();
         },
         onLeaveBack: () => {
-          console.log(`Article ${index} left back - reversing enter`);
           animation.reverse();
         },
       });
