@@ -174,7 +174,6 @@ export default function Projects() {
           {/* Header Section */}
           <div className="flex flex-col md:flex-row justify-between items-end gap-8 border-b border-border/40 pb-12">
             <div className="relative">
-              <p className="text-sm font-mono text-muted-foreground mb-4 tracking-widest uppercase">Select Work</p>
               <h2
                 ref={titleRef}
                 className="text-8xl md:text-9xl font-bold tracking-tighter text-foreground leading-[0.9]"
