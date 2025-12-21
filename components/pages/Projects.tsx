@@ -100,24 +100,26 @@ export default function Projects() {
     });
 
     // Set initial positions based on article type
-    const minorSideArticles = Array.from(articles).filter((article, index) => index === 0 || index === 1);
-    const majorArticle = Array.from(articles).find((article, index) => index === 2);
-
-    if (minorSideArticles.length > 0) {
-      gsap.set(minorSideArticles, {
-        x: -100,
-      });
-    }
+    // Index 0 is the Major Project (Left/Main)
+    // Indices 1 and 2 are the Minor/Side Projects (Right/Sidebar)
+    const majorArticle = articles[0];
+    const sideArticles = Array.from(articles).slice(1);
 
     if (majorArticle) {
       gsap.set(majorArticle, {
-        x: 100,
+        x: -100, // Enters from left
+      });
+    }
+
+    if (sideArticles.length > 0) {
+      gsap.set(sideArticles, {
+        x: 100, // Enters from right
       });
     }
 
     // Create individual ScrollTriggers for each article
     Array.from(articles).forEach((article, index) => {
-      const isMinorOrSide = index === 0 || index === 1;
+      const isRight = index !== 0; // Index 0 is Left, others are Right
       
       // Create animation for this specific article
       const animation = gsap.to(article, {
@@ -132,7 +134,7 @@ export default function Projects() {
       // Create leave animation for this specific article
       const leaveAnimation = gsap.to(article, {
         opacity: 0.6,
-        x: isMinorOrSide ? 50 : -50,
+        x: isRight ? 50 : -50, // Move in direction of origin (or away)
         duration: 1.0,
         ease: "power2.in",
         paused: true,
@@ -141,6 +143,7 @@ export default function Projects() {
       // Create ScrollTrigger for this article
       ScrollTrigger.create({
         trigger: article,
+        start: "top 85%",
         onEnter: () => {
           animation.play();
         },
@@ -149,10 +152,6 @@ export default function Projects() {
         },
         onEnterBack: () => {
           leaveAnimation.reverse();
-          animation.play();
-        },
-        onLeaveBack: () => {
-          animation.reverse();
         },
       });
     });
