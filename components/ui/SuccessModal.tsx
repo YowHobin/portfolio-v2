@@ -13,6 +13,7 @@ interface SuccessModalProps {
 export default function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
   useEffect(() => {
     if (isOpen) {
+      document.body.style.overflow = 'hidden';
       const duration = 2500;
       const end = Date.now() + duration;
 
@@ -38,7 +39,13 @@ export default function SuccessModal({ isOpen, onClose }: SuccessModalProps) {
       };
 
       frame();
+    } else {
+      document.body.style.overflow = '';
     }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   return (
