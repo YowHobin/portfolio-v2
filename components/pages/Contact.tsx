@@ -8,6 +8,7 @@ import Reveal from "../ui/Reveal";
 import { sendEmail } from "@/app/actions/send-email";
 import SuccessModal from "../ui/SuccessModal";
 import { SparklesText } from "../ui/sparkles-text";
+import { useThemeVersion } from "@/lib/useThemeVersion";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -24,12 +25,25 @@ export default function Contact() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [sparklesVisible, setSparklesVisible] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const [recaptchaKey, setRecaptchaKey] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const buttonIconRef = useRef<SVGSVGElement>(null);
   const buttonShineRef = useRef<HTMLDivElement>(null);
+  const themeVersion = useThemeVersion();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    
+    const isDark = document.documentElement.classList.contains("dark") || 
+                   document.documentElement.getAttribute("data-theme") === "dark";
+    setIsDarkTheme(isDark);
+    // Force reCAPTCHA re-render when theme changes
+    setRecaptchaKey(prev => prev + 1);
+  }, [themeVersion]);
 
   useEffect(() => {
     if (!titleRef.current || !sectionRef.current) return;
@@ -254,7 +268,7 @@ export default function Contact() {
 
         {/* Right Side: Minimalist Form */}
         <div className="relative">
-          <div className="absolute  opacity-50" />
+          <div className="absolute opacity-50" />
           <div className="relative bg-background/50 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-[2rem] p-8 md:p-12 shadow-xl">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
@@ -314,12 +328,13 @@ export default function Contact() {
 
               <div className="flex justify-center">
                 <ReCAPTCHA
+                  key={recaptchaKey}
                   ref={recaptchaRef}
                   sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? ""}
                   onChange={(token: string | null) => setRecaptchaToken(token)}
                   onExpired={() => setRecaptchaToken(null)}
                   onErrored={() => setRecaptchaToken(null)}
-                  theme="dark"
+                  theme={isDarkTheme ? "dark" : "light"}
                 />
               </div>
 
