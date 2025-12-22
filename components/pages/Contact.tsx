@@ -27,6 +27,8 @@ export default function Contact() {
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   const [recaptchaKey, setRecaptchaKey] = useState(0);
+  const lastThemeRef = useRef<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
@@ -38,11 +40,29 @@ export default function Contact() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     
-    const isDark = document.documentElement.classList.contains("dark") || 
-                   document.documentElement.getAttribute("data-theme") === "dark";
-    setIsDarkTheme(isDark);
-    // Force reCAPTCHA re-render when theme changes
-    setRecaptchaKey(prev => prev + 1);
+    const currentTheme = document.documentElement.classList.contains("dark") || 
+                        document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    // Only update if theme actually changed, with a small delay to avoid rapid re-renders
+    if (lastThemeRef.current !== currentTheme) {
+      timeoutRef.current = setTimeout(() => {
+        lastThemeRef.current = currentTheme;
+        setIsDarkTheme(currentTheme === "dark");
+        // Only force reCAPTCHA re-render if theme actually changed
+        setRecaptchaKey(prev => prev + 1);
+      }, 100); // 100ms delay to debounce
+    }
+    
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [themeVersion]);
 
   useEffect(() => {
@@ -331,10 +351,20 @@ export default function Contact() {
                   key={recaptchaKey}
                   ref={recaptchaRef}
                   sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? ""}
-                  onChange={(token: string | null) => setRecaptchaToken(token)}
-                  onExpired={() => setRecaptchaToken(null)}
-                  onErrored={() => setRecaptchaToken(null)}
+                  onChange={(token: string | null) => {
+                    setRecaptchaToken(token);
+                  }}
+                  onExpired={() => {
+                    setRecaptchaToken(null);
+                  }}
+                  onErrored={() => {
+                    console.error('reCAPTCHA loading error');
+                    setRecaptchaToken(null);
+                  }}
                   theme={isDarkTheme ? "dark" : "light"}
+                  asyncScriptOnLoad={() => {
+                    console.log('reCAPTCHA loaded successfully');
+                  }}
                 />
               </div>
 
