@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Reveal from "../ui/Reveal";
@@ -22,8 +23,13 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [sparklesVisible, setSparklesVisible] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonIconRef = useRef<SVGSVGElement>(null);
+  const buttonShineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!titleRef.current || !sectionRef.current) return;
@@ -54,6 +60,93 @@ export default function Contact() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!buttonRef.current || !buttonIconRef.current || !buttonShineRef.current) return;
+
+    const button = buttonRef.current;
+    const icon = buttonIconRef.current;
+    const shine = buttonShineRef.current;
+
+    // Set initial states
+    gsap.set(shine, { x: "-200%" });
+
+    // Create hover timeline
+    const handleMouseEnter = () => {
+      const tl = gsap.timeline();
+      
+      // Button scale and shadow
+      tl.to(button, {
+        scale: 1.02,
+        boxShadow: "0 20px 25px -5px rgb(99 102 241 / 0.4)",
+        duration: 0.2,
+        ease: "power2.out"
+      })
+      // Icon movement
+      .to(icon, {
+        x: 4,
+        y: -4,
+        duration: 0.2,
+        ease: "power2.out"
+      }, "-=0.2")
+      // Shine effect
+      .to(shine, {
+        x: "200%",
+        duration: 1,
+        ease: "power2.inOut"
+      }, "-=0.1");
+    };
+
+    const handleMouseLeave = () => {
+      const tl = gsap.timeline();
+      
+      // Reset button scale and shadow
+      tl.to(button, {
+        scale: 1,
+        boxShadow: "0 10px 15px -3px rgb(99 102 241 / 0.25)",
+        duration: 0.2,
+        ease: "power2.out"
+      })
+      // Reset icon position
+      .to(icon, {
+        x: 0,
+        y: 0,
+        duration: 0.2,
+        ease: "power2.out"
+      }, "-=0.2")
+      // Reset shine position
+      .set(shine, { x: "-200%" });
+    };
+
+    const handleMouseDown = () => {
+      gsap.to(button, {
+        scale: 0.98,
+        duration: 0.1,
+        ease: "power2.out"
+      });
+    };
+
+    const handleMouseUp = () => {
+      gsap.to(button, {
+        scale: 1.02,
+        duration: 0.1,
+        ease: "power2.out"
+      });
+    };
+
+    // Add event listeners
+    button.addEventListener("mouseenter", handleMouseEnter);
+    button.addEventListener("mouseleave", handleMouseLeave);
+    button.addEventListener("mousedown", handleMouseDown);
+    button.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      button.removeEventListener("mouseenter", handleMouseEnter);
+      button.removeEventListener("mouseleave", handleMouseLeave);
+      button.removeEventListener("mousedown", handleMouseDown);
+      button.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !message) {
@@ -64,6 +157,10 @@ export default function Contact() {
       setStatus("Message is too long.");
       return;
     }
+    if (!recaptchaToken) {
+      setStatus("Please complete the reCAPTCHA.");
+      return;
+    }
 
     setIsSubmitting(true);
     setStatus(null);
@@ -72,6 +169,7 @@ export default function Contact() {
     formData.append("name", name);
     formData.append("email", email);
     formData.append("message", message);
+    formData.append("recaptchaToken", recaptchaToken);
 
     try {
       const result = await sendEmail(formData);
@@ -83,6 +181,8 @@ export default function Contact() {
         setName("");
         setEmail("");
         setMessage("");
+        setRecaptchaToken(null);
+        recaptchaRef.current?.reset();
       }
     } catch (error) {
       console.error(error);
@@ -141,12 +241,12 @@ export default function Contact() {
                   </div>
                   <span>lenardroyarellano@gmail.com</span>
                 </a>
-                <div className="flex items-center gap-4 text-lg text-muted-foreground">
+                {/* <div className="flex items-center gap-4 text-lg text-muted-foreground">
                   <div className="w-12 h-12 rounded-full border border-border flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                   </div>
                   <span>Response time: ~24 hours</span>
-                </div>
+                </div> */}
               </div>
             </div>
           </Reveal>
@@ -212,17 +312,46 @@ export default function Contact() {
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end">
+              <div className="flex justify-center">
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? ""}
+                  onChange={(token: string | null) => setRecaptchaToken(token)}
+                  onExpired={() => setRecaptchaToken(null)}
+                  onErrored={() => setRecaptchaToken(null)}
+                  theme="dark"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-center">
                 <button 
+                  ref={buttonRef}
                   type="submit" 
-                  disabled={isSubmitting}
-                  className="group relative px-8 py-3 bg-primary text-primary-foreground rounded-xl font-medium overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100 shadow-lg shadow-primary/25 hover:shadow-primary/40"
+                  disabled={isSubmitting || !recaptchaToken}
+                  className="group relative px-8 py-3 bg-primary text-primary-foreground rounded-xl font-medium overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 cursor-pointer"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+                  <div 
+                    ref={buttonShineRef}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                  />
                   <span className="relative flex items-center justify-center gap-2 text-base">
                     {isSubmitting ? "Sending..." : "Send Message"}
                     {!isSubmitting && (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                      <svg 
+                        ref={buttonIconRef}
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="18" 
+                        height="18" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      >
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                      </svg>
                     )}
                   </span>
                 </button>

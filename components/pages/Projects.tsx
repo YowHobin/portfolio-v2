@@ -174,19 +174,20 @@ export default function Projects() {
           {/* Header Section */}
           <div className="flex flex-col md:flex-row justify-between items-end gap-8 border-b border-border/40 pb-12">
             <div className="relative">
+              <p className="text-[0.65rem] uppercase tracking-[0.55em] text-foreground/35">
+                Selected Work
+              </p>
               <h2
                 ref={titleRef}
-                className="text-8xl md:text-9xl font-bold tracking-tighter text-foreground leading-[0.9]"
+                className="mt-3 text-5xl sm:text-6xl lg:text-9xl font-semibold tracking-tight leading-[0.95]"
               >
-                Selected<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-gradient">Works</span>
+                Selected Works.
               </h2>
             </div>
             
             <Reveal>
-              <p className="text-xl text-muted-foreground max-w-md font-light leading-relaxed text-right md:text-left">
-                A collection of shipped products and experiments. 
-                <span className="block mt-2 text-foreground font-medium">Built with precision.</span>
+              <p className="text-base sm:text-lg text-foreground/60 max-w-2xl font-light leading-relaxed text-right md:text-left">
+                A selection of shipped work and focused experiments—built for performance, clarity, and long-term maintenance.
               </p>
             </Reveal>
           </div>
