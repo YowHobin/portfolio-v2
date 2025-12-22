@@ -193,7 +193,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" ref={sectionRef} className="relative min-h-screen flex items-center overflow-hidden">
+    <section id="contact" ref={sectionRef} className="relative min-h-screen flex items-center  bg-transparent">
       <SuccessModal isOpen={showSuccessModal} onClose={() => setShowSuccessModal(false)} />
       
       {/* Dynamic Background */}
@@ -254,8 +254,8 @@ export default function Contact() {
 
         {/* Right Side: Minimalist Form */}
         <div className="relative">
-          <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-[2rem] blur-2xl opacity-50" />
-          <div className="relative bg-background/50 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-[2rem] p-8 md:p-12 shadow-2xl">
+          <div className="absolute  opacity-50" />
+          <div className="relative bg-background/50 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-[2rem] p-8 md:p-12 shadow-xl">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -328,7 +328,7 @@ export default function Contact() {
                   ref={buttonRef}
                   type="submit" 
                   disabled={isSubmitting || !recaptchaToken}
-                  className="group relative px-8 py-3 bg-primary text-primary-foreground rounded-xl font-medium overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 cursor-pointer"
+                  className="group relative px-8 py-3 bg-primary text-primary-foreground rounded-xl font-medium overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-primary/25 cursor-pointer"
                 >
                   <div 
                     ref={buttonShineRef}
@@ -367,5 +367,6 @@ export default function Contact() {
         </div>
       </div>
     </section>
+    
   );
 }
