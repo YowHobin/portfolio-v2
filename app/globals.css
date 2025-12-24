@@ -6,7 +6,7 @@
 :root {
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --brand-primary: #476EAE;
+  --brand-primary: #800000;
   --brand-secondary: #48B3AF;
   --brand-tertiary: #A7E399;
   --brand-quaternary: #F6FF99;

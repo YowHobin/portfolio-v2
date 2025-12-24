@@ -111,7 +111,6 @@ export default function Contact() {
       // Button scale and shadow
       tl.to(button, {
         scale: 1.02,
-        boxShadow: "0 20px 25px -5px rgb(99 102 241 / 0.4)",
         duration: 0.2,
         ease: "power2.out"
       })
