@@ -362,7 +362,7 @@ export default function Contact() {
                   }}
                   theme={isDarkTheme ? "dark" : "light"}
                   asyncScriptOnLoad={() => {
-                    console.log('reCAPTCHA loaded successfully');
+                    //console.log('reCAPTCHA loaded successfully');
                   }}
                 />
               </div>
