@@ -126,7 +126,7 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
               const isDark = !!root && (root.classList.contains('dark') || root.getAttribute('data-theme') === 'dark');
               const action = (top.cfg.action ?? 'highlight');
               if (isDark) {
-                if (action === 'underline') return '#a3dd95';
+                if (action === 'underline') return '#FF6B6B';
                 return '#476eae';
               }
               // light

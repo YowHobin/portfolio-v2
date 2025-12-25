@@ -172,7 +172,7 @@ export default function Bridge({ id, className = "", height, fullHeight = true, 
                 const isDark = !!root && (root.classList.contains('dark') || root.getAttribute('data-theme') === 'dark');
                 const action = (item.highlighter?.action ?? 'highlight');
                 if (isDark) {
-                  if (action === 'underline') return '#a3dd95';
+                  if (action === 'underline') return '#FF6B6B';
                   return '#476eae';
                 }
                 // light

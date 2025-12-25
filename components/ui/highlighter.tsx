@@ -173,7 +173,7 @@ export function Highlighter({
         const mapLightByAction = () => {
           if (colorLight) return resolveColorInput(colorLight, '#476EAE')
           if (action === 'highlight') return cssVar('--brand-primary', '#476EAE')
-          if (action === 'underline') return cssVar('--brand-tertiary', '#A7E399')
+          if (action === 'underline') return cssVar('--brand-tertiary', '#FF6B6B')
           return resolveColorInput(color, '#ffd1dc')
         }
         const actualColor = isDark ? resolveColorInput(colorDark, (action === 'highlight' ? '#fde68a' : '#f59e0b')) : mapLightByAction()

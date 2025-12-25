@@ -8,8 +8,8 @@
   --muted-foreground: oklch(0.556 0 0);
   --brand-primary: #800000;
   --brand-secondary: #48B3AF;
-  --brand-tertiary: #A7E399;
-  --brand-quaternary: #F6FF99;
+  --brand-tertiary: #FF6B6B;
+  --brand-quaternary: #4ECDC4;
   --primary: var(--brand-primary);
   --primary-foreground: #ffffff;
   --accent: var(--brand-primary);
