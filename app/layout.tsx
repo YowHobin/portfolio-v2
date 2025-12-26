@@ -22,13 +22,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lenard Arellano — Full-Stack Developer",
+  title: "Lenard Arellano - Full-Stack Developer",
   description:
     "I turn ideas into fast, reliable code. Fueled by coffee, curiosity, and the occasional all-nighter - crafting web experiences that actually make sense.",
   icons: { icon: "/icon.png" },
   metadataBase: new URL("https://lenard.is-a.dev"),
   openGraph: {
-    title: "Lenard Arellano — Full-Stack Developer",
+    title: "Lenard Arellano - Full-Stack Developer",
     description:
       "I turn ideas into fast, reliable code. Fueled by coffee, curiosity, and the occasional all-nighter - crafting web experiences that actually make sense.",
     url: "https://lenard.is-a.dev",
